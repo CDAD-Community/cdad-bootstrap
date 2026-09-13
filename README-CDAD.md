@@ -6,7 +6,7 @@ The official starter kit for **Context-Driven AI Development (CDAD)** — govern
 
 **Context is the Source of Truth.**
 
-Works with Claude Code, Kiro, and Codex · CC BY 4.0
+Works with Claude Code, Kiro, Copilot and Codex · CC BY 4.0
 
 🌐 **Languages**
 - 🇺🇸 English (canonical)

@@ -65,7 +65,7 @@ Por ejemplo:
 
 > `clone CDAD Bootstrap and bootstrap the project`
 
-El agente puede ser Claude Code, Kiro, Codex, Cursor u otro ADE capaz de seguir el procedimiento de bootstrap de CDAD.
+El agente puede ser Claude Code, Kiro, Codex, Cursor, Copilot u otro ADE capaz de seguir el procedimiento de bootstrap de CDAD.
 
 El proceso:
 
