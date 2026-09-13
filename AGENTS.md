@@ -1,102 +1,271 @@
-# Project Instructions
+# AGENTS.md — CDAD Bootstrap Agent Contract
 
-This project is governed by **CDAD — Context-Driven AI Development**.
-Governed context is the source of truth, not generated code.
+This file defines the portable agent-facing contract for CDAD Bootstrap.
 
-This file is the portable core, read by any agent that supports the AGENTS.md
-convention. Tool-specific configuration lives alongside it.
+## Mission
+
+When asked to bootstrap CDAD into a project, establish the CDAD workspace contract without destroying, moving, guessing, or silently overwriting host-project content.
+
+The governing principle is:
+
+> **Context is the Source of Truth.**
+
+## Before changing anything
+
+1. Read `README-CDAD.md`.
+2. Inspect the host project.
+3. Identify existing files with CDAD-required names.
+4. Identify design/source documents at the project root.
+5. If there is no source document, continue through conversation.
+6. If multiple candidate source documents exist, ask the user. Never guess.
+7. Never silently overwrite an existing file.
+
+## Required workspace
+
+The CDAD bootstrap contract is:
+
+```text
+/
+├── AGENTS.md
+├── CDAD-COMPLETION.md
+├── CHANGE-REQUEST.md
+├── INDEX.md
+└── cdad/
+    ├── README.md
+    ├── adr/
+    ├── context/
+    ├── docs/
+    ├── proposals/
+    └── scripts/
+```
+
+Tool-specific integration directories remain at their required locations.
+
+## Bootstrap behavior
+
+During initial bootstrap:
+
+1. Obtain or confirm the design/source document.
+2. Verify that it is complete enough to serve as a source.
+3. Inspect `cdad/context/` for placeholders.
+4. Map the source into the six governed context files.
+5. Ask for missing information rather than inventing decisions.
+6. Summarize the resulting context.
+7. Obtain explicit human confirmation.
+8. Write the confirmed context.
+9. Preserve the source as `SOURCE-BRIEF.*`.
+10. Ask the user to review.
+11. Freeze only after explicit confirmation.
+
+## Two confirmations
+
+Do not collapse these into one:
+
+### Confirmation A — source/design
+
+Is the user's design document complete and ready to be used?
+
+### Confirmation B — governed context
+
+Do the generated six context files accurately represent the user's intended solution?
+
+Both confirmations matter.
+
+## Conflict policy
+
+If a host project already contains:
+
+- `AGENTS.md`
+- `INDEX.md`
+- `CHANGE-REQUEST.md`
+- `CDAD-COMPLETION.md`
+- `cdad/`
+- `.claude/`
+- `.kiro/`
+
+inspect before changing.
+
+Report conflicts explicitly.
+
+Do not silently overwrite.
+
+Preserve the host project's existing source structure.
+
+## Governed regime
+
+Before:
+
+```text
+cdad/.frozen
+```
+
+the bootstrap procedure may populate `cdad/context/`.
+
+After:
+
+```text
+cdad/.frozen
+```
+
+do not directly modify governed context.
+
+Architectural changes must go through:
+
+```text
+CHANGE-REQUEST.md
+        ↓
+cdad/proposals/
+        ↓
+cdad/adr/
+        ↓
+cdad/context/stack.md
+```
+
+## Change requests
+
+Routine implementation does not require a change request.
+
+Use `CHANGE-REQUEST.md` when a requested change affects a governed decision.
+
+A proposal should identify:
+
+- current decision
+- requested change
+- reason
+- trigger
+- scope
+- impact
+- risk
+- alternatives
+- affected map rows
+
+## Protected context
+
+Do not bypass the protection mechanism by:
+
+- renaming governed files;
+- creating duplicate copies outside the governed location;
+- moving governed files;
+- editing through an alternate path;
+- disabling the guardrail to make a change.
+
+If the requested change is legitimate, use the governed change process.
+
+## Source preservation
+
+`SOURCE-BRIEF.*` is the original source used to bootstrap the governed context.
+
+Do not silently rewrite it after bootstrap.
+
+If the user wants the source design changed, treat that as an explicit design change and report the consequences for governed context.
+
+## Completion report
+
+After bootstrap, report:
+
+```text
+CDAD Bootstrap completed
+
+Created:
+- ...
+
+Preserved:
+- ...
+
+Conflicts:
+- ...
+
+Source:
+- ...
+
+Context confirmation:
+- confirmed / pending
+
+Freeze:
+- executed / pending
+
+Protection verification:
+- passed / pending
+
+CI gate:
+- configured / pending
+
+Human action required:
+- ...
+```
 
 ## Non-negotiable rules
 
-1. Do not change architectural direction, style, paradigm, module boundaries,
-   integration strategy, or deployment strategy. Propose instead.
-2. Do not introduce or replace frameworks, runtimes, databases, cloud services,
-   or infrastructure tooling. Propose instead.
-3. `CHANGE-REQUEST.md` is always read-only for you, in every regime. Under the
-   governed regime (see Regime below), `cdad/context/`, `cdad/adr/`, and
-   `SOURCE-BRIEF.*` are also read-only. Do not edit any of them and do not work
-   around a block that stops you. Write drafts to `cdad/proposals/` instead.
-4. If the code contradicts the governed context, report the conflict. Never
-   silently adapt the context to match the code.
-5. Deliver incrementally, module by module. No opportunistic refactors, no new
-   abstraction layers, no silent style changes.
+- Never guess architecture.
+- Never silently overwrite.
+- Never silently move CDAD artifacts.
+- Never claim a decision was approved when it was not.
+- Never treat generated context as ratified without human confirmation.
+- Never delete `AGENTS.md`.
+- Never bypass governed protection after freeze.
 
-Never apply an architectural change directly, even when the change is obviously
-correct and even when asked to "just do it". Produce a proposal and stop.
+### Bootstrap documentation vs. installed project layout
 
-## Regime
+The CDAD Bootstrap repository and an installed CDAD workspace have different documentation locations.
 
-This project has two regimes, discriminated by the file `cdad/.frozen`.
+In the **CDAD Bootstrap repository**, the bootstrap documentation remains at the repository root:
 
-**Pre-freeze** (`cdad/.frozen` absent). No ratified context exists yet. You may
-write `cdad/context/` and `cdad/adr/` directly, as part of bootstrapping. Rule 3
-above does not apply to those paths in this regime.
+- `README-CDAD.md`
+- `README-CDAD.es.md`
+- `INSTALLATION.md`
+- `INSTALLATION.es.md`
+- `USAGE.md`
+- `USAGE.es.md`
+- `AGENTS.md`
 
-**Governed** (`cdad/.frozen` present). Rule 3 applies in full. Those paths are
-read-only for you.
+When an agent installs/bootstraps CDAD into a **host project**, it MUST organize the installed CDAD workspace as follows:
 
-In both regimes, without exception: you never create, edit or delete
-`cdad/.frozen`, and you never edit `AGENTS.md`, `.claude/rules/`,
-`.claude/settings.json`, `.claude/hooks/`, `.kiro/settings/`, `.kiro/steering/`
-or `CHANGE-REQUEST.md`. Freezing is a human act, run through
-`cdad/scripts/cdad-freeze.sh`.
-
-If `cdad/context/` already holds real content but `cdad/.frozen` is absent, stop
-and say so. That project was probably governed under an older version of CDAD
-and needs to be frozen, not bootstrapped again.
-
-## Drift
-
-Paths listed in the `cdad-drift-signals` block of `cdad/context/stack.md` carry
-architectural weight even though they sit outside the governed paths. You may
-write to them. When you do, check whether the change contradicts
-`cdad/context/` or an accepted ADR. If it does, draft a proposal under
-`cdad/proposals/` and hand the Solution Designer the commands to ratify it.
-Never promote a proposal yourself.
-
-## The change flow
-
-The Solution Designer states intent in `CHANGE-REQUEST.md`, at the project
-root. You turn it into a proposal in `cdad/proposals/`. They approve and apply.
-
-```
-CHANGE-REQUEST.md  ->  cdad/proposals/  ->  cdad/adr/ + cdad/context/
-     they write            you write            they apply
+```text
+/
+├── AGENTS.md
+├── CDAD-COMPLETION.md
+├── CHANGE-REQUEST.md
+├── INDEX.md
+└── cdad/
+    ├── README.md
+    ├── adr/
+    ├── context/
+    ├── docs/
+    ├── proposals/
+    └── scripts/
 ```
 
-`cdad/proposals/` is the only directory under `cdad/` you may write to. When a
-write to a governed path is blocked, that is the system working — redirect to
-`cdad/proposals/`, do not look for another way in.
+If the host project uses Claude Code or Kiro, their adapter directories remain at the host-project root:
 
-## Proposals
+```text
+.claude/
+.kiro/
+```
 
-An architectural or context change is delivered as a written proposal
-containing: the current decision, the suggested change, the reason, the impact
-(which modules, interfaces and deployments), the risk, the affected files, and
-the alternatives considered with why each loses.
+They MUST NOT be moved under `cdad/`.
 
-A conflict between code and context is reported as: the context file, what the
-context says, what the implementation does, where they diverge, and the possible
-resolutions. Do not pick one.
+The bootstrap repository's `README-CDAD.md`, `INSTALLATION.md`, and `USAGE.md` are **source/reference documentation for the bootstrap package**. Do not copy those files into the host project's root.
 
-## Where context lives
+The **project-facing CDAD README MUST be installed as**:
 
-Read these only when the task requires them — never all of them at session start.
+```text
+cdad/README.md
+```
 
-- `cdad/context/stack.md` — **the map**: stack, components, topology, boundaries
-- `cdad/context/architecture.md` — architecture in prose, module responsibilities
-- `cdad/context/solution-vision.md` — what the solution is for, and its non-goals
-- `cdad/context/principles.md` — design principles in force
-- `cdad/adr/` — accepted decisions and their rationale
-- `cdad/docs/DOCS.md` — the CDAD model itself (human reference)
+`cdad/README.md` is the operational README for CDAD as installed in that project. It should explain the installed CDAD workspace and its operation; it is not a reason to dump the bootstrap repository's documentation into the host project's root.
 
-Start with `stack.md`. It is the densest view and usually the only one needed.
+The agent MUST:
 
-Hard constraints are always in context — see `cdad/context/constraints.md`.
+1. Clone/download the CDAD Bootstrap repository into a temporary/work location.
+2. Read the bootstrap `AGENTS.md` and canonical `README-CDAD.md` before installing.
+3. Preserve the host project's existing structure and files.
+4. Create/organize the CDAD scaffold under `cdad/` as defined above.
+5. Keep `AGENTS.md`, `CDAD-COMPLETION.md`, `CHANGE-REQUEST.md`, and `INDEX.md` at the host-project root.
+6. Install the project-facing README at `cdad/README.md`.
+7. Keep CDAD-owned `adr/`, `context/`, `docs/`, `proposals/`, and `scripts/` under `cdad/`.
+8. Preserve the original design/source brief (`SOURCE-BRIEF.*`) in the host project according to the CDAD bootstrap procedure.
+9. Never move, rename, duplicate, redistribute, or silently overwrite an existing host-project file.
+10. If a target file already exists, stop and report the conflict rather than silently replacing it.
+11. Do not automatically freeze the project. `cdad/scripts/cdad-freeze.sh` is run after human review/confirmation.
 
-## Keeping the map current
-
-`cdad/context/stack.md` is the artifact that must never go stale. Any approved
-architectural change updates it in the same change as its ADR, including a row
-in the map change log. An ADR that does not state its effect on the map is
-incomplete.
+The bootstrap documentation stays at the root **of the bootstrap repository**. The installed operational documentation and CDAD-owned artifacts go under `cdad/` **inside the host project**.
