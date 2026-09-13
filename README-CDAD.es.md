@@ -10,7 +10,7 @@ Compatible con Claude Code, Kiro y Codex · CC BY 4.0
 
 🌐 **Idiomas / Languages**
 
-- 🇺🇸 [English](README.md)
+- 🇺🇸 [English](README-CDAD.md)
 - 🇪🇸 Español (actual)
 
 \---

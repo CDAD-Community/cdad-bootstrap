@@ -8,7 +8,10 @@ The official starter kit for **Context-Driven AI Development (CDAD)** — govern
 
 Works with Claude Code, Kiro, and Codex · CC BY 4.0
 
----
+🌐 ** Languages**
+
+- 🇺🇸 [English] (now)
+- 🇪🇸 Español (README-CDAD.es.md)
 
 ## Quick navigation
 
