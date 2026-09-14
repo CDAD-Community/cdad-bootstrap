@@ -97,7 +97,7 @@ The idea is simple:
 
 > You and the agent define what you want to build and how it should be built; you confirm it; CDAD turns that agreed design into governed context; then AI develops under that context.
 
-For the detailed procedures, see [INSTALLATION.md](INSTALLATION.md) and [USAGE.md](USAGE.md).
+For the detailed procedures, see [cdad/INSTALLATION.md](cdad/INSTALLATION.md) and [cdad/USAGE.md](cdad/USAGE.md).
 
 ### 2. Manual installation
 
@@ -105,7 +105,7 @@ CDAD can also be installed manually by a human.
 
 At minimum, the project must receive the CDAD workspace scaffolding defined below. Copy the shipped CDAD files/directories into the project root, preserve the required locations, merge the supplied `.gitignore` rather than overwriting an existing one, and then complete the governed context before freezing it.
 
-See [INSTALLATION.md](INSTALLATION.md#manual-installation) for the complete manual procedure.
+See [cdad/INSTALLATION.md](cdad/INSTALLATION.md#manual-installation) for the complete manual procedure.
 
 ### 3. Agent-assisted installation
 
@@ -137,9 +137,9 @@ one native adapter. The CDAD Bootstrap source distribution contains every
 adapter because it is a catalog; installing all of them into a project is
 not the intended flow.
 
-**Portable core:** `AGENTS.md`, `README-CDAD.md`, `README-CDAD.es.md`, `SOURCE-BRIEF.*` (if a source document existed) at the project root, plus `cdad/` itself — carrying `INDEX.md`, `CHANGE-REQUEST.md`, `CDAD-COMPLETION.md`, `backlog.md`, `context/`, `adr/`, `proposals/`, `docs/`, `scripts/`.
+**Portable core:** `AGENTS.md`, `README-CDAD.md`, `README-CDAD.es.md`, `SOURCE-BRIEF.*` (if a source document existed) at the project root, plus `cdad/` itself — carrying `INDEX.md`, `CHANGE-REQUEST.md`, `CDAD-COMPLETION.md`, `backlog.md`, `INSTALLATION.md`/`.es.md`, `USAGE.md`/`.es.md`, `context/`, `adr/`, `proposals/`, `docs/`, `scripts/`.
 
-| Host ADE | Adapter | `.claude/` | `.kiro/` | `AGENTS.md` | `.github/copilot-instructions.md` |
+| Host ADE | Adapter | `.claude/` | `.kiro/` | `AGENTS.md` | `.copilot/copilot-instructions.md` |
 | --- | --- | :---: | :---: | :---: | :---: |
 | Claude Code | Claude | YES | NO | YES | NO |
 | Kiro | Kiro | NO | YES | YES | NO |
@@ -147,6 +147,14 @@ not the intended flow.
 | GitHub Copilot | Copilot | NO | NO | YES | YES |
 | Other supported ADE | Explicit adapter only | only if mapped | only if mapped | per support | per support |
 | Unknown ADE | Portable/unknown | NO | NO | do not guess | NO |
+
+> **Known limitation:** GitHub Copilot's actual discovery path for
+> repository-wide custom instructions is `.github/copilot-instructions.md`,
+> per current GitHub documentation. CDAD deliberately keeps the file at
+> `.copilot/copilot-instructions.md` instead, for naming consistency with
+> `.claude/` and `.kiro/` — which means Copilot will not pick it up
+> automatically at that path. Mirror it to `.github/copilot-instructions.md`
+> as well if you need Copilot to load it on its own.
 
 The adapter decision is based on the ADE actually executing the bootstrap —
 never on the underlying model. A Claude model is not Claude Code; a GPT
@@ -195,6 +203,10 @@ When bootstrapping CDAD into a project, **the AI coding agent/ADE MUST create an
     ├── CHANGE-REQUEST.md
     ├── CDAD-COMPLETION.md
     ├── backlog.md
+    ├── INSTALLATION.md
+    ├── INSTALLATION.es.md
+    ├── USAGE.md
+    ├── USAGE.es.md
     ├── adr/
     ├── context/
     ├── docs/
@@ -210,7 +222,7 @@ When bootstrapping CDAD into a project, **the AI coding agent/ADE MUST create an
 - CDAD-owned directories (`adr/`, `context/`, `docs/`, `proposals/`, `scripts/`) MUST remain under `cdad/`.
 - The agent MUST NOT move, rename, duplicate, or redistribute CDAD artifacts outside this structure.
 - The agent MUST preserve the host project's existing source structure and must not silently overwrite an existing file with the same name. Conflicts MUST be reported and resolved explicitly.
-- ADE-specific files required by the host tool — `.claude/`, `.kiro/`, or `.github/copilot-instructions.md` — remain at their required locations and do not change the CDAD workspace contract. Only the adapter matching the ADE executing the bootstrap is installed; see [ADE adapters](#ade-adapters).
+- ADE-specific files required by the host tool — `.claude/`, `.kiro/`, or `.copilot/copilot-instructions.md` — remain at their required locations and do not change the CDAD workspace contract. Only the adapter matching the ADE executing the bootstrap is installed; see [ADE adapters](#ade-adapters).
 
 This structure is a **CDAD bootstrap contract**, not merely a documentation convention.
 
@@ -233,7 +245,7 @@ The test: *if I am a developer using CDAD, does the project root look like
 my project, while `cdad/` clearly contains the CDAD governance machinery?*
 The root should contain only:
 
-- ADE discovery/integration files that genuinely require root/native placement (`.claude/`, `.kiro/`, `.github/copilot-instructions.md`, or `AGENTS.md` itself).
+- ADE discovery/integration files that genuinely require root/native placement (`.claude/`, `.kiro/`, `.copilot/copilot-instructions.md`, or `AGENTS.md` itself).
 - CDAD's human-facing entry points (`README-CDAD.md`, `README-CDAD.es.md`, `SOURCE-BRIEF.*`).
 - The user's own project files.
 
@@ -414,6 +426,10 @@ cdad/                           # CDAD governance — everything below is genera
 ├── CHANGE-REQUEST.md           # front door for change intent
 ├── CDAD-COMPLETION.md          # durable bootstrap completion record
 ├── backlog.md                  # development line — Epics, Stories, current focus
+├── INSTALLATION.md              # detailed setup procedures
+├── INSTALLATION.es.md
+├── USAGE.md                     # the normal development loop
+├── USAGE.es.md
 ├── proposals/                  # agent drafts awaiting review
 ├── context/                    # L0 — governed context
 │   ├── stack.md                # the seven-view architecture map
@@ -446,12 +462,12 @@ cdad/                           # CDAD governance — everything below is genera
 │
 .kiro/steering/                 # Kiro adapter
 │
-.github/copilot-instructions.md # GitHub Copilot adapter
+.copilot/copilot-instructions.md # GitHub Copilot adapter
 ```
 
 ### Why some files stay at the root
 
-`.claude/`, `.kiro/`, and `.github/copilot-instructions.md` remain at the root because these tools discover their configuration at fixed locations. Moving them into `cdad/` can make the tools silently stop loading the intended rules and skills. Only the one matching your resolved adapter is actually installed — see [ADE adapters](#ade-adapters).
+`.claude/`, `.kiro/`, and `.copilot/copilot-instructions.md` remain at the root because these tools discover their configuration at fixed locations. Moving them into `cdad/` can make the tools silently stop loading the intended rules and skills. Only the one matching your resolved adapter is actually installed — see [ADE adapters](#ade-adapters).
 
 `AGENTS.md` remains at the root because Kiro, Codex, and Copilot read it by convention.
 
@@ -474,7 +490,7 @@ cdad/                           # CDAD governance — everything below is genera
 
 ## Getting started
 
-1. Copy the portable core — `AGENTS.md`, `README-CDAD.md`, `README-CDAD.es.md`, and `cdad/` in full (including `cdad/docs/`, `cdad/scripts/`, and the `INDEX.md`/`CHANGE-REQUEST.md`/`CDAD-COMPLETION.md`/`backlog.md` already inside it) — into the project root, plus only the adapter matching your ADE: `.claude/` (including `.claude/CLAUDE.md`) for Claude Code, `.kiro/` for Kiro, `.github/copilot-instructions.md` for GitHub Copilot, or nothing extra for Codex. See [ADE adapters](#ade-adapters); do not copy the other adapters in "just in case."
+1. Copy the portable core — `AGENTS.md`, `README-CDAD.md`, `README-CDAD.es.md`, and `cdad/` in full (including `cdad/docs/`, `cdad/scripts/`, and the `INDEX.md`/`CHANGE-REQUEST.md`/`CDAD-COMPLETION.md`/`backlog.md` already inside it) — into the project root, plus only the adapter matching your ADE: `.claude/` (including `.claude/CLAUDE.md`) for Claude Code, `.kiro/` for Kiro, `.copilot/copilot-instructions.md` for GitHub Copilot, or nothing extra for Codex. See [ADE adapters](#ade-adapters); do not copy the other adapters in "just in case."
 2. Merge the kit's `.gitignore` into your existing `.gitignore`; do not overwrite an existing project file.
 3. Run the `cdad-bootstrap` skill (for example, “bootstrap CDAD” or “set up CDAD”) instead of filling `cdad/context/` by hand — it performs step 1 above for you, deterministically.
 4. If you prefer to author the context manually, start with `cdad/context/stack.md`. Leave a cell empty rather than guessing; an explicit unknown is preferable to an invented decision.
@@ -509,7 +525,7 @@ Full file map: [`cdad/INDEX.md`](cdad/INDEX.md) · Migration guidance: [`cdad/do
 | Deterministic write block | yes | `permissions.yaml` (1.0+) | config globs | no — CI gate only |
 | Governed context + CI gate | yes | yes | yes | yes |
 
-Claude Code supports the complete adapter set. Kiro's `permissions.yaml` covers unconditional machinery paths declaratively; regime-conditional paths rely on the shared hook plus CI gate where needed. Codex keeps the write protection model but has fewer fine-grained conditional-loading controls. GitHub Copilot reads repository-wide instructions from `.github/copilot-instructions.md` and agent instructions from `AGENTS.md`, per current GitHub documentation; it gets no path-scoped loading and no deterministic write block beyond the CI gate — the Copilot adapter is intentionally thin and does not claim capabilities CDAD has not actually implemented for it.
+Claude Code supports the complete adapter set. Kiro's `permissions.yaml` covers unconditional machinery paths declaratively; regime-conditional paths rely on the shared hook plus CI gate where needed. Codex keeps the write protection model but has fewer fine-grained conditional-loading controls. GitHub Copilot reads repository-wide instructions from `.github/copilot-instructions.md` and agent instructions from `AGENTS.md`, per current GitHub documentation — note that CDAD's adapter file lives at `.copilot/copilot-instructions.md` instead, so it is not picked up automatically at Copilot's real path; see the note above. It gets no path-scoped loading and no deterministic write block beyond the CI gate — the Copilot adapter is intentionally thin and does not claim capabilities CDAD has not actually implemented for it.
 
 Details and portability notes: [`cdad/docs/DOCS.md`](cdad/docs/DOCS.md#portability-claude-code-kiro-codex-copilot)
 
@@ -532,7 +548,7 @@ rm -rf .claude
 
 # Moving to Codex or Copilot
 rm -rf .claude .kiro
-# Copilot also needs .github/copilot-instructions.md; bootstrap installs it
+# Copilot also needs .copilot/copilot-instructions.md; bootstrap installs it
 ```
 
 **Never delete `AGENTS.md`.** It contains the portable core rules. Claude Code imports it; Kiro, Codex, and Copilot read it natively.
@@ -553,7 +569,7 @@ infra/AGENTS.md
 - `cdad/backlog.md`: Epics/Stories change through `cdad/CHANGE-REQUEST.md` like an architectural decision; status and focus updates during routine implementation are direct edits.
 - `cdad/CHANGE-REQUEST.md`: your entry point whenever a governed decision or the committed development line needs to change.
 - `SOURCE-BRIEF.*`: written once during bootstrap and preserved as the original source, at the project root.
-- Your resolved adapter (`.claude/`, `.kiro/`, or `.github/copilot-instructions.md`) and `cdad/scripts/`: CDAD runtime/integration assets that normally require little change beyond path configuration.
+- Your resolved adapter (`.claude/`, `.kiro/`, or `.copilot/copilot-instructions.md`) and `cdad/scripts/`: CDAD runtime/integration assets that normally require little change beyond path configuration.
 
 ---
 

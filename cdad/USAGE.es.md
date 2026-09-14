@@ -245,7 +245,7 @@ de uno — resuelto automáticamente, no elegido copiando archivos después.
 - Claude Code utiliza `.claude/`.
 - Kiro utiliza `.kiro/`.
 - Codex utiliza `AGENTS.md` y la configuración aplicable, sin archivo adicional.
-- GitHub Copilot utiliza `.github/copilot-instructions.md` más `AGENTS.md`.
+- GitHub Copilot utiliza `.copilot/copilot-instructions.md` más `AGENTS.md`.
 
 **Nunca elimines `AGENTS.md`.**
 
@@ -284,9 +284,13 @@ CDAD no intenta impedir que la IA modifique software. Establece un límite gober
 
 ### Destino del despliegue: repositorio Bootstrap vs. proyecto anfitrión
 
-Los archivos de documentación de este repositorio Bootstrap permanecen en la **raíz del repositorio Bootstrap**.
+`README-CDAD.md`, `README-CDAD.es.md` y `AGENTS.md` permanecen en la **raíz
+del proyecto** — los puntos de entrada canónicos, leídos antes que
+cualquier otra cosa. Todo lo demás que posee CDAD, incluyendo este archivo,
+vive bajo `cdad/`, tanto en el repositorio Bootstrap como en cualquier
+proyecto anfitrión donde se instale.
 
-Cuando un agente despliega CDAD dentro de un proyecto anfitrión, DEBE reorganizar el workspace instalado para que el contenido operativo y propio de CDAD quede bajo `cdad/`:
+Cuando un agente despliega CDAD dentro de un proyecto anfitrión, DEBE reorganizar el workspace instalado para que el contenido propio de CDAD quede bajo `cdad/`:
 
 ```text
 /
@@ -300,6 +304,10 @@ Cuando un agente despliega CDAD dentro de un proyecto anfitrión, DEBE reorganiz
     ├── CHANGE-REQUEST.md
     ├── CDAD-COMPLETION.md
     ├── backlog.md
+    ├── INSTALLATION.md
+    ├── INSTALLATION.es.md
+    ├── USAGE.md
+    ├── USAGE.es.md
     ├── adr/
     ├── context/
     ├── docs/
@@ -307,12 +315,6 @@ Cuando un agente despliega CDAD dentro de un proyecto anfitrión, DEBE reorganiz
     └── scripts/
 ```
 
-El único adaptador resuelto — `.claude/`, `.kiro/`, o `.github/copilot-instructions.md` — permanece en la raíz del proyecto anfitrión. Solo ese se instala.
-
-`README-CDAD.md` y `README-CDAD.es.md` SÍ se copian a la raíz del proyecto
-anfitrión como puntos de entrada humanos. `INSTALLATION.md` y `USAGE.md` (y
-sus pares `.es.md`) son documentación de referencia exclusiva del
-repositorio Bootstrap — no copies esos dos. El README orientado al proyecto
-instalado debe quedar en `cdad/README.md`.
+El único adaptador resuelto — `.claude/`, `.kiro/`, o `.copilot/copilot-instructions.md` — permanece en la raíz del proyecto anfitrión. Solo ese se instala.
 
 El agente debe preservar los archivos existentes del proyecto, no sobrescribir conflictos silenciosamente y no ejecutar automáticamente el freeze. La revisión y confirmación humana deben ocurrir antes del freeze.

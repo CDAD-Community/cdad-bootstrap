@@ -36,6 +36,10 @@ The CDAD bootstrap contract is:
     ├── CHANGE-REQUEST.md
     ├── CDAD-COMPLETION.md
     ├── backlog.md
+    ├── INSTALLATION.md
+    ├── INSTALLATION.es.md
+    ├── USAGE.md
+    ├── USAGE.es.md
     ├── adr/
     ├── context/
     ├── docs/
@@ -93,9 +97,10 @@ judgment call for the `cdad-audit` skill.
 CDAD ships a portable core — this file, `README-CDAD.md`, `README-CDAD.es.md`,
 and `SOURCE-BRIEF.*` (if a source document existed) at the project root, plus
 `cdad/` itself (carrying `INDEX.md`, `CHANGE-REQUEST.md`, `CDAD-COMPLETION.md`,
-`backlog.md`, `context/`, `adr/`, `proposals/`, `docs/`, `scripts/`) — plus
+`backlog.md`, `INSTALLATION.md`/`.es.md`, `USAGE.md`/`.es.md`, `context/`,
+`adr/`, `proposals/`, `docs/`, `scripts/`) — plus
 one adapter per supported ADE: Claude Code → `.claude/`, Kiro → `.kiro/`,
-Codex → `AGENTS.md` alone, GitHub Copilot → `.github/copilot-instructions.md`.
+Codex → `AGENTS.md` alone, GitHub Copilot → `.copilot/copilot-instructions.md`.
 The CDAD Bootstrap source carries every adapter as a catalog; a target
 project receives the portable core plus exactly the one adapter matching the
 ADE that is executing the bootstrap — never the whole catalog, never more
@@ -151,7 +156,7 @@ If a host project already contains:
 - `cdad/` (including `INDEX.md`, `CHANGE-REQUEST.md`, `CDAD-COMPLETION.md`, `backlog.md` inside it)
 - `.claude/`
 - `.kiro/`
-- `.github/copilot-instructions.md`
+- `.copilot/copilot-instructions.md`
 
 inspect before changing.
 
@@ -302,15 +307,15 @@ Human action required:
 
 The CDAD Bootstrap repository and an installed CDAD workspace have different documentation locations.
 
-In the **CDAD Bootstrap repository**, the bootstrap documentation remains at the repository root:
+In the **CDAD Bootstrap repository**, the canonical entry points remain at the repository root:
 
 - `README-CDAD.md`
 - `README-CDAD.es.md`
-- `INSTALLATION.md`
-- `INSTALLATION.es.md`
-- `USAGE.md`
-- `USAGE.es.md`
 - `AGENTS.md`
+
+`INSTALLATION.md`, `INSTALLATION.es.md`, `USAGE.md`, and `USAGE.es.md` live
+under `cdad/` — indexed from `cdad/INDEX.md` and linked from the two
+READMEs above — the same as in any host project this repository bootstraps.
 
 When an agent installs/bootstraps CDAD into a **host project**, it MUST organize the installed CDAD workspace as follows:
 
@@ -326,6 +331,10 @@ When an agent installs/bootstraps CDAD into a **host project**, it MUST organize
     ├── CHANGE-REQUEST.md
     ├── CDAD-COMPLETION.md
     ├── backlog.md
+    ├── INSTALLATION.md
+    ├── INSTALLATION.es.md
+    ├── USAGE.md
+    ├── USAGE.es.md
     ├── adr/
     ├── context/
     ├── docs/
@@ -344,7 +353,7 @@ Install only the adapter matching the ADE executing the bootstrap (see *Adapters
 ```text
 .claude/                         # Claude Code
 .kiro/                           # Kiro
-.github/copilot-instructions.md  # GitHub Copilot
+.copilot/copilot-instructions.md  # GitHub Copilot
 ```
 
 Codex takes no adapter file beyond `AGENTS.md` itself. Do not install the adapters for ADEs other than the one executing the bootstrap, even if the CDAD Bootstrap source contains them all.
@@ -352,9 +361,10 @@ Codex takes no adapter file beyond `AGENTS.md` itself. Do not install the adapte
 `README-CDAD.md` and `README-CDAD.es.md` ARE installed at the host-project
 root — they are the human-facing CDAD entry points and must stay
 discoverable there, not buried under `cdad/`. `INSTALLATION.md` and
-`USAGE.md` (and their `.es.md` pairs) are **source/reference documentation
-for the bootstrap package only** — do not copy those two into the host
-project.
+`USAGE.md` (and their `.es.md` pairs) ARE also installed, under `cdad/`
+alongside `INDEX.md`, `CHANGE-REQUEST.md`, `CDAD-COMPLETION.md`, and
+`backlog.md` — indexed from `cdad/INDEX.md` and linked from the two
+READMEs at root.
 
 The **project-facing CDAD README MUST be installed as**:
 

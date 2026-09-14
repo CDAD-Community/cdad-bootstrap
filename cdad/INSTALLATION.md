@@ -41,7 +41,7 @@ Identify:
 - existing `cdad/` (and, inside it, `INDEX.md`, `CHANGE-REQUEST.md`, `CDAD-COMPLETION.md`, `backlog.md`)
 - existing `.claude/`
 - existing `.kiro/`
-- existing `.github/copilot-instructions.md`
+- existing `.copilot/copilot-instructions.md`
 - existing `.gitignore`
 - source/design documents
 - files or directories with names that CDAD requires
@@ -66,6 +66,10 @@ The resulting workspace must contain:
     ├── CHANGE-REQUEST.md
     ├── CDAD-COMPLETION.md
     ├── backlog.md
+    ├── INSTALLATION.md
+    ├── INSTALLATION.es.md
+    ├── USAGE.md
+    ├── USAGE.es.md
     ├── adr/
     ├── context/
     ├── docs/
@@ -75,10 +79,10 @@ The resulting workspace must contain:
 
 Only ADE discovery/integration files, the two CDAD READMEs, `AGENTS.md`,
 and `SOURCE-BRIEF.*` belong at the project root — see *Workspace hygiene*
-in `README-CDAD.md`. `INDEX.md`, `CHANGE-REQUEST.md`, `CDAD-COMPLETION.md`,
-and `backlog.md` are generated directly under `cdad/`, never at the root.
+in `README-CDAD.md`. Everything else CDAD owns, including this file, is
+generated directly under `cdad/`, never at the root.
 
-Install only the ADE-specific adapter matching the ADE you actually use — `.claude/` for Claude Code, `.kiro/` for Kiro, or `.github/copilot-instructions.md` for GitHub Copilot (Codex takes no extra adapter file). Do not copy the others "just in case"; the source repository ships every adapter as a catalog, not as a package to install whole. See the ADE adapter matrix in the README.
+Install only the ADE-specific adapter matching the ADE you actually use — `.claude/` for Claude Code, `.kiro/` for Kiro, or `.copilot/copilot-instructions.md` for GitHub Copilot (Codex takes no extra adapter file). Do not copy the others "just in case"; the source repository ships every adapter as a catalog, not as a package to install whole. See the ADE adapter matrix in the README.
 
 ### 3. Preserve the source design
 
@@ -279,9 +283,12 @@ After installation, continue with [USAGE.md](USAGE.md).
 
 ### Deployment target: bootstrap repository vs. host project
 
-The documentation files in this bootstrap repository stay at the **bootstrap repository root**.
+`README-CDAD.md`, `README-CDAD.es.md`, and `AGENTS.md` stay at the
+**project root** — the canonical entry points, read before anything else.
+Everything else CDAD owns, including this file, lives under `cdad/`, in
+both the bootstrap repository and any host project it installs into.
 
-When an agent deploys CDAD into a host project, it MUST reorganize the installed workspace so that CDAD-owned runtime content is under `cdad/`:
+When an agent deploys CDAD into a host project, it MUST reorganize the installed workspace so that CDAD-owned content is under `cdad/`:
 
 ```text
 /
@@ -295,6 +302,10 @@ When an agent deploys CDAD into a host project, it MUST reorganize the installed
     ├── CHANGE-REQUEST.md
     ├── CDAD-COMPLETION.md
     ├── backlog.md
+    ├── INSTALLATION.md
+    ├── INSTALLATION.es.md
+    ├── USAGE.md
+    ├── USAGE.es.md
     ├── adr/
     ├── context/
     ├── docs/
@@ -302,13 +313,6 @@ When an agent deploys CDAD into a host project, it MUST reorganize the installed
     └── scripts/
 ```
 
-Whichever single adapter was resolved — `.claude/` (Claude Code), `.kiro/` (Kiro), or `.github/copilot-instructions.md` (GitHub Copilot) — remains at the host-project root. Only that one is installed, never more than one.
-
-`README-CDAD.md` and `README-CDAD.es.md` ARE copied into the host-project
-root — they are the human-facing CDAD entry points and must stay
-discoverable there. `INSTALLATION.md` and `USAGE.md` (and their `.es.md`
-pairs) are **bootstrap-repository reference documentation only** — do not
-copy those two into the host project. The installed, project-facing CDAD
-README belongs at `cdad/README.md`.
+Whichever single adapter was resolved — `.claude/` (Claude Code), `.kiro/` (Kiro), or `.copilot/copilot-instructions.md` (GitHub Copilot) — remains at the host-project root. Only that one is installed, never more than one.
 
 The agent must preserve existing host-project files, must not silently overwrite conflicts, and must not run the freeze step automatically. Human review and confirmation precede freezing.

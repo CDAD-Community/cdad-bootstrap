@@ -291,7 +291,7 @@ ADE actually executing it — see the ADE adapter matrix in `README.md` and in
 
 | Capability | Claude Code | Kiro | Codex | GitHub Copilot |
 |---|---|---|---|---|
-| Always-loaded instructions | `.claude/CLAUDE.md` | `AGENTS.md`, or steering `inclusion: always` | `AGENTS.md` | `AGENTS.md` + `.github/copilot-instructions.md` |
+| Always-loaded instructions | `.claude/CLAUDE.md` | `AGENTS.md`, or steering `inclusion: always` | `AGENTS.md` | `AGENTS.md` + `.github/copilot-instructions.md`* |
 | Reads `AGENTS.md` natively | no — imports it | yes | yes | yes |
 | Path-scoped rules | `.claude/rules/` + `paths:` | `.kiro/steering/` + `inclusion: fileMatch` | nested `AGENTS.md` only | none documented |
 | On-demand procedures | Skills | steering `inclusion: manual` / `auto` | prompt or custom command | prompt |
@@ -300,6 +300,10 @@ ADE actually executing it — see the ADE adapter matrix in `README.md` and in
 | Governed context in `cdad/` | works | works | works | works |
 | CI gate (`cdad/scripts/`) | works | works | works | works |
 
+\* CDAD's Copilot adapter file actually lives at `.copilot/copilot-instructions.md`
+(naming consistency with `.claude/`/`.kiro/`), so Copilot does not load it
+automatically — see the note under *GitHub Copilot* below.
+
 **Short version:** Claude Code runs everything. Kiro runs everything except the
 deterministic write block, which it approximates. Codex runs the content and the
 write block, but loses conditional loading — its instruction file is
@@ -307,7 +311,8 @@ all-or-nothing. GitHub Copilot is the thinnest adapter: content and the CI
 gate work, with neither conditional loading nor a deterministic write block —
 CDAD does not claim Copilot capabilities beyond what current GitHub
 documentation actually supports (`.github/copilot-instructions.md` for
-repository-wide instructions, `AGENTS.md` for agent instructions).
+repository-wide instructions, `AGENTS.md` for agent instructions) — including
+the fact that CDAD's own adapter file does not live at that path by default.
 
 ### Claude Code
 
@@ -386,8 +391,13 @@ quickly.
 
 Copilot reads two files per current GitHub documentation: repository-wide
 instructions from `.github/copilot-instructions.md`, and agent instructions
-from `AGENTS.md`. The portable core loads through `AGENTS.md` with no other
-adapter machinery beyond that single pointer file.
+from `AGENTS.md`. CDAD's adapter file lives at `.copilot/copilot-instructions.md`
+instead — a deliberate naming choice, consistent with `.claude/` and
+`.kiro/` being named after the tool rather than the platform — which means
+Copilot does **not** load it automatically at that path; mirror it to
+`.github/copilot-instructions.md` too if automatic loading matters for the
+project. The portable core loads through `AGENTS.md` with no other adapter
+machinery beyond that single pointer file.
 
 **Conditional loading does not exist.** `.github/copilot-instructions.md` is
 repository-wide only — there is no documented path-scoped equivalent to
@@ -411,7 +421,7 @@ adapter by hand; bootstrap will not do this for you, and re-running it will
 not add a second native adapter on its own either.
 
 Keep `AGENTS.md` as the single source for the core rules. Never restate a rule
-in `.claude/CLAUDE.md` or `.github/copilot-instructions.md` that already lives
+in `.claude/CLAUDE.md` or `.copilot/copilot-instructions.md` that already lives
 in `AGENTS.md` — that duplication is exactly the defect v2 was built to
 remove.
 

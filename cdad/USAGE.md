@@ -246,7 +246,7 @@ resolved automatically, not chosen by copying files around afterward.
 - Claude Code uses `.claude/`.
 - Kiro uses `.kiro/`.
 - Codex uses `AGENTS.md` and applicable configuration, no extra adapter file.
-- GitHub Copilot uses `.github/copilot-instructions.md` plus `AGENTS.md`.
+- GitHub Copilot uses `.copilot/copilot-instructions.md` plus `AGENTS.md`.
 
 **Never remove `AGENTS.md`.**
 
@@ -285,9 +285,12 @@ CDAD does not attempt to make AI incapable of changing software. It establishes 
 
 ### Deployment target: bootstrap repository vs. host project
 
-The documentation files in this bootstrap repository stay at the **bootstrap repository root**.
+`README-CDAD.md`, `README-CDAD.es.md`, and `AGENTS.md` stay at the
+**project root** — the canonical entry points, read before anything else.
+Everything else CDAD owns, including this file, lives under `cdad/`, in
+both the bootstrap repository and any host project it installs into.
 
-When an agent deploys CDAD into a host project, it MUST reorganize the installed workspace so that CDAD-owned runtime content is under `cdad/`:
+When an agent deploys CDAD into a host project, it MUST reorganize the installed workspace so that CDAD-owned content is under `cdad/`:
 
 ```text
 /
@@ -301,6 +304,10 @@ When an agent deploys CDAD into a host project, it MUST reorganize the installed
     ├── CHANGE-REQUEST.md
     ├── CDAD-COMPLETION.md
     ├── backlog.md
+    ├── INSTALLATION.md
+    ├── INSTALLATION.es.md
+    ├── USAGE.md
+    ├── USAGE.es.md
     ├── adr/
     ├── context/
     ├── docs/
@@ -308,12 +315,6 @@ When an agent deploys CDAD into a host project, it MUST reorganize the installed
     └── scripts/
 ```
 
-Whichever single adapter was resolved — `.claude/`, `.kiro/`, or `.github/copilot-instructions.md` — remains at the host-project root. Only that one is installed.
-
-`README-CDAD.md` and `README-CDAD.es.md` ARE copied into the host-project
-root as the human-facing entry points. `INSTALLATION.md` and `USAGE.md`
-(and their `.es.md` pairs) are bootstrap-repository reference documentation
-only — do not copy those two. The installed, project-facing CDAD README
-belongs at `cdad/README.md`.
+Whichever single adapter was resolved — `.claude/`, `.kiro/`, or `.copilot/copilot-instructions.md` — remains at the host-project root. Only that one is installed.
 
 The agent must preserve existing host-project files, must not silently overwrite conflicts, and must not run the freeze step automatically. Human review and confirmation precede freezing.

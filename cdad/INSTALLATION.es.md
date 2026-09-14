@@ -41,7 +41,7 @@ Identifica:
 - `cdad/` existente (y, dentro, `INDEX.md`, `CHANGE-REQUEST.md`, `CDAD-COMPLETION.md`, `backlog.md`)
 - `.claude/` existente
 - `.kiro/` existente
-- `.github/copilot-instructions.md` existente
+- `.copilot/copilot-instructions.md` existente
 - `.gitignore` existente
 - documentos de diseño/origen
 - archivos o directorios cuyos nombres sean requeridos por CDAD
@@ -66,6 +66,10 @@ El workspace final debe contener:
     ├── CHANGE-REQUEST.md
     ├── CDAD-COMPLETION.md
     ├── backlog.md
+    ├── INSTALLATION.md
+    ├── INSTALLATION.es.md
+    ├── USAGE.md
+    ├── USAGE.es.md
     ├── adr/
     ├── context/
     ├── docs/
@@ -75,11 +79,11 @@ El workspace final debe contener:
 
 Solo los archivos de descubrimiento/integración del ADE, los dos READMEs de
 CDAD, `AGENTS.md` y `SOURCE-BRIEF.*` pertenecen a la raíz del proyecto — ver
-*Higiene del workspace* en `README-CDAD.md`. `INDEX.md`, `CHANGE-REQUEST.md`,
-`CDAD-COMPLETION.md` y `backlog.md` se generan directamente bajo `cdad/`,
-nunca en la raíz.
+*Higiene del workspace* en `README-CDAD.md`. Todo lo demás que posee CDAD,
+incluyendo este archivo, se genera directamente bajo `cdad/`, nunca en la
+raíz.
 
-Instala únicamente el adaptador correspondiente al ADE que realmente usás — `.claude/` para Claude Code, `.kiro/` para Kiro, o `.github/copilot-instructions.md` para GitHub Copilot (Codex no necesita ningún archivo adicional). No copies los demás "por las dudas"; el repositorio fuente distribuye todos los adaptadores como catálogo, no como paquete para instalar completo. Ver la matriz de adaptadores de ADE en el README.
+Instala únicamente el adaptador correspondiente al ADE que realmente usás — `.claude/` para Claude Code, `.kiro/` para Kiro, o `.copilot/copilot-instructions.md` para GitHub Copilot (Codex no necesita ningún archivo adicional). No copies los demás "por las dudas"; el repositorio fuente distribuye todos los adaptadores como catálogo, no como paquete para instalar completo. Ver la matriz de adaptadores de ADE en el README.
 
 ### 3. Preservar el diseño original
 
@@ -248,9 +252,13 @@ Continúa con [USAGE.es.md](USAGE.es.md).
 
 ### Destino del despliegue: repositorio Bootstrap vs. proyecto anfitrión
 
-Los archivos de documentación de este repositorio Bootstrap permanecen en la **raíz del repositorio Bootstrap**.
+`README-CDAD.md`, `README-CDAD.es.md` y `AGENTS.md` permanecen en la **raíz
+del proyecto** — los puntos de entrada canónicos, leídos antes que
+cualquier otra cosa. Todo lo demás que posee CDAD, incluyendo este archivo,
+vive bajo `cdad/`, tanto en el repositorio Bootstrap como en cualquier
+proyecto anfitrión donde se instale.
 
-Cuando un agente despliega CDAD dentro de un proyecto anfitrión, DEBE reorganizar el workspace instalado para que el contenido operativo y propio de CDAD quede bajo `cdad/`:
+Cuando un agente despliega CDAD dentro de un proyecto anfitrión, DEBE reorganizar el workspace instalado para que el contenido propio de CDAD quede bajo `cdad/`:
 
 ```text
 /
@@ -264,6 +272,10 @@ Cuando un agente despliega CDAD dentro de un proyecto anfitrión, DEBE reorganiz
     ├── CHANGE-REQUEST.md
     ├── CDAD-COMPLETION.md
     ├── backlog.md
+    ├── INSTALLATION.md
+    ├── INSTALLATION.es.md
+    ├── USAGE.md
+    ├── USAGE.es.md
     ├── adr/
     ├── context/
     ├── docs/
@@ -271,13 +283,6 @@ Cuando un agente despliega CDAD dentro de un proyecto anfitrión, DEBE reorganiz
     └── scripts/
 ```
 
-El único adaptador resuelto — `.claude/` (Claude Code), `.kiro/` (Kiro), o `.github/copilot-instructions.md` (GitHub Copilot) — permanece en la raíz del proyecto anfitrión. Solo ese se instala, nunca más de uno.
-
-`README-CDAD.md` y `README-CDAD.es.md` SÍ se copian a la raíz del proyecto
-anfitrión — son los puntos de entrada humanos de CDAD y deben quedar
-descubribles ahí. `INSTALLATION.md` y `USAGE.md` (y sus pares `.es.md`) son
-**documentación de referencia exclusiva del repositorio Bootstrap** — no
-copies esos dos al proyecto anfitrión. El README orientado al proyecto
-instalado debe quedar en `cdad/README.md`.
+El único adaptador resuelto — `.claude/` (Claude Code), `.kiro/` (Kiro), o `.copilot/copilot-instructions.md` (GitHub Copilot) — permanece en la raíz del proyecto anfitrión. Solo ese se instala, nunca más de uno.
 
 El agente debe preservar los archivos existentes del proyecto, no sobrescribir conflictos silenciosamente y no ejecutar automáticamente el freeze. La revisión y confirmación humana deben ocurrir antes del freeze.

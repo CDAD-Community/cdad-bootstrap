@@ -19,7 +19,8 @@ that resolve to.
 CDAD Bootstrap ships a portable core — `AGENTS.md` and `SOURCE-BRIEF.*` (if a
 source document exists) at the project root, plus `cdad/` (which itself
 carries `INDEX.md`, `backlog.md`, `CHANGE-REQUEST.md`, `CDAD-COMPLETION.md`,
-`context/`, `adr/`, `proposals/`, `docs/`, `scripts/`) — plus one adapter per
+`INSTALLATION.md`/`.es.md`, `USAGE.md`/`.es.md`, `context/`, `adr/`,
+`proposals/`, `docs/`, `scripts/`) — plus one adapter per
 supported ADE. The source repository carries every adapter — it is a
 catalog, not a package to install whole. A target project receives the
 portable core plus exactly the adapter matching the ADE actually executing
@@ -28,7 +29,7 @@ stays the user's — only ADE discovery files, the two CDAD READMEs, and
 `AGENTS.md`/`SOURCE-BRIEF.*` belong there; everything else CDAD owns lives
 under `cdad/`.
 
-| Host ADE | Adapter | `.claude/` | `.kiro/` | `AGENTS.md` | `.github/copilot-instructions.md` |
+| Host ADE | Adapter | `.claude/` | `.kiro/` | `AGENTS.md` | `.copilot/copilot-instructions.md` |
 |---|---|---|---|---|---|
 | Claude Code | Claude | YES | NO | YES | NO |
 | Kiro | Kiro | NO | YES | YES | NO |
@@ -111,7 +112,7 @@ cdad/-relocation). If any are found:
 
 Look at the project root only — not subdirectories, not the rest of the repo.
 Anything there that isn't part of the kit itself (`AGENTS.md`, `SOURCE-BRIEF.*`,
-`README-CDAD.md`, `README-CDAD.es.md`, `.claude/`, `.kiro/`, `.github/`, `cdad/`)
+`README-CDAD.md`, `README-CDAD.es.md`, `.claude/`, `.kiro/`, `copilot/`, `cdad/`)
 and isn't ordinary project scaffolding (`package.json`, `.gitignore`, a
 pre-existing `README.md`, `LICENSE`, and the like) is a candidate solution
 document. The

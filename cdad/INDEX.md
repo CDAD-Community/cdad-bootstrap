@@ -18,6 +18,8 @@ ADE or a human needs to find them there. See *Workspace hygiene* in
 - [Context](context/) — L0, governed
 - [ADRs](adr/) — L1, accepted decisions
 - [Proposals](proposals/) — agent drafts awaiting review
+- [Installation](INSTALLATION.md) — detailed setup procedures
+- [Usage](USAGE.md) — the normal development loop
 - [Docs](docs/) — human reference, methodology
 - [Scripts](scripts/) — CI gates and freeze
 - [AGENTS.md](../AGENTS.md) — portable core rules (root)
@@ -92,7 +94,7 @@ because this source repository is the catalog, not an installed project.
 | `../.claude/rules/infrastructure.md` *(Claude Code adapter)* | Rules for `infra/`, `deploy/`, CI | on matching files |
 | `../.kiro/steering/cdad-implementation.md` *(Kiro adapter)* | Kiro mirror of the above | on matching files |
 | `../.kiro/steering/cdad-infrastructure.md` *(Kiro adapter)* | Kiro mirror of the above | on matching files |
-| `../.github/copilot-instructions.md` *(Copilot adapter)* | Points Copilot at `AGENTS.md` and `cdad/` as the canonical source; no duplicated methodology | repository-wide, per GitHub Copilot |
+| `../.copilot/copilot-instructions.md` *(Copilot adapter)* | Points Copilot at `AGENTS.md` and `cdad/` as the canonical source; no duplicated methodology. Not auto-loaded by Copilot at this path — see the note in `README-CDAD.md` → *ADE adapters* | never (manual reference only, unless also mirrored to `.github/copilot-instructions.md`) |
 
 ## Procedures — load only when invoked
 
@@ -125,8 +127,10 @@ because this source repository is the catalog, not an installed project.
 | File | Contains |
 |---|---|
 | `INDEX.md` | This file |
-| `../README-CDAD.md` | What CDAD is, setup, tool support |
-| `docs/DOCS.md` | Governance model, layers, enforcement planes, Claude Code vs Kiro vs Codex, upgrading from CDAD v1 |
+| `../README-CDAD.md` / `../README-CDAD.es.md` | What CDAD is, setup, tool support — the canonical entry point |
+| `INSTALLATION.md` / `INSTALLATION.es.md` | Detailed installation procedures, manual and agent-assisted |
+| `USAGE.md` / `USAGE.es.md` | The normal development loop, change requests, freeze model |
+| `docs/DOCS.md` | Governance model, layers, enforcement planes, Claude Code vs Kiro vs Codex vs Copilot, upgrading from CDAD v1 |
 
 ---
 
