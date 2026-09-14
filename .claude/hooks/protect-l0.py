@@ -1,19 +1,27 @@
 #!/usr/bin/env python3
 """CDAD - L0/L1 context protection (PreToolUse hook).
 
-permissions.deny already blocks the Write/Edit tools. This hook closes the
-remaining gap: shell commands (sed -i, tee, redirection, mv) that would reach
-the same files without going through a file tool.
+permissions.deny already blocks the Write/Edit tools for the unconditional
+machinery paths. This hook covers two more things static config can't
+express: shell commands (sed -i, tee, redirection, mv) reaching the same
+files without going through a file tool, and the two-regime condition on
+cdad/context/ and cdad/adr/ - writable pre-freeze, denied once cdad/.frozen
+exists (ADR-008). A static permissions.deny entry can't test for a file's
+existence, so those two paths are deliberately absent from settings.json and
+live here instead.
 
 Exit 2 plus permissionDecision:deny blocks the call deterministically.
 Any unexpected input exits 0 so a broken hook never blocks a session.
 """
 
 import json
+import os
 import re
 import sys
 
-ALWAYS_PROTECTED = re.compile(r"cdad/(context|adr)/")
+FROZEN_MARKER = "cdad/.frozen"
+
+REGIME_PATHS = re.compile(r"cdad/(context|adr)/")
 ROOT_FILES = re.compile(r"CHANGE-REQUEST\.md|SOURCE-BRIEF\.")
 MUTATING_SHELL = re.compile(
     r"\b(sed\s+-i|tee|mv|cp|rm|truncate|dd|install)\b"
@@ -28,14 +36,18 @@ REASON = (
 )
 
 
+def is_frozen() -> bool:
+    return os.path.exists(FROZEN_MARKER)
+
+
 def is_protected(target: str) -> bool:
-    if ALWAYS_PROTECTED.search(target):
-        return True
     # cdad/proposals/ is the one directory an agent may always write to -
     # SOURCE-BRIEF.* and CHANGE-REQUEST.md are only protected outside it
     # (e.g. cdad-bootstrap staging cdad/proposals/bootstrap/SOURCE-BRIEF.md).
     if "cdad/proposals/" in target:
         return False
+    if REGIME_PATHS.search(target):
+        return is_frozen()
     return bool(ROOT_FILES.search(target))
 
 

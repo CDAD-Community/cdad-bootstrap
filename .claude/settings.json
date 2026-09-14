@@ -1,10 +1,6 @@
 {
   "permissions": {
     "deny": [
-      "Edit(/cdad/context/**)",
-      "Write(/cdad/context/**)",
-      "Edit(/cdad/adr/**)",
-      "Write(/cdad/adr/**)",
       "Edit(/CHANGE-REQUEST.md)",
       "Write(/CHANGE-REQUEST.md)",
       "Edit(/SOURCE-BRIEF.*)",
