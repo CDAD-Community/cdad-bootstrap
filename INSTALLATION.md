@@ -37,8 +37,8 @@ Before copying CDAD, inspect the project root.
 Identify:
 
 - existing `AGENTS.md`
-- existing `INDEX.md`
-- existing `CHANGE-REQUEST.md`
+- existing `README-CDAD.md` / `README-CDAD.es.md`
+- existing `cdad/` (and, inside it, `INDEX.md`, `CHANGE-REQUEST.md`, `CDAD-COMPLETION.md`, `backlog.md`)
 - existing `.claude/`
 - existing `.kiro/`
 - existing `.github/copilot-instructions.md`
@@ -57,18 +57,26 @@ The resulting workspace must contain:
 ```text
 /
 ├── AGENTS.md
-├── backlog.md
-├── CDAD-COMPLETION.md
-├── CHANGE-REQUEST.md
-├── INDEX.md
+├── README-CDAD.md
+├── README-CDAD.es.md
+├── SOURCE-BRIEF.*                # if a source document existed
 └── cdad/
     ├── README.md
+    ├── INDEX.md
+    ├── CHANGE-REQUEST.md
+    ├── CDAD-COMPLETION.md
+    ├── backlog.md
     ├── adr/
     ├── context/
     ├── docs/
     ├── proposals/
     └── scripts/
 ```
+
+Only ADE discovery/integration files, the two CDAD READMEs, `AGENTS.md`,
+and `SOURCE-BRIEF.*` belong at the project root — see *Workspace hygiene*
+in `README-CDAD.md`. `INDEX.md`, `CHANGE-REQUEST.md`, `CDAD-COMPLETION.md`,
+and `backlog.md` are generated directly under `cdad/`, never at the root.
 
 Install only the ADE-specific adapter matching the ADE you actually use — `.claude/` for Claude Code, `.kiro/` for Kiro, or `.github/copilot-instructions.md` for GitHub Copilot (Codex takes no extra adapter file). Do not copy the others "just in case"; the source repository ships every adapter as a catalog, not as a package to install whole. See the ADE adapter matrix in the README.
 
@@ -190,7 +198,7 @@ An agent should treat this repository as an executable documentation contract, n
 9. Never overwrite an existing same-name file silently.
 10. Create the CDAD workspace contract: the portable core plus only the resolved adapter, explicitly excluding the others.
 11. Map the confirmed source into the governed context.
-12. Check for defined Epics/Stories (a requirements doc, issue tracker, or prior conversation). If found, reconcile them into `backlog.md`; if none exist, say so explicitly rather than inventing them.
+12. Check for defined Epics/Stories (a requirements doc, issue tracker, or prior conversation). If found, reconcile them into `cdad/backlog.md`; if none exist, say so explicitly rather than inventing them.
 13. Ask the user to confirm the generated context.
 14. Preserve the source as `SOURCE-BRIEF.*`.
 15. Freeze only after explicit human confirmation.
@@ -210,7 +218,7 @@ After installation, the agent should report:
 - files intentionally skipped
 - source document used
 - whether context was confirmed
-- whether `backlog.md` is defined and reconciled with any known Epics/Stories
+- whether `cdad/backlog.md` is defined and reconciled with any known Epics/Stories
 - whether freeze was executed
 - whether protection was verified
 - whether CI gate was connected
@@ -255,7 +263,7 @@ Run this after verifying that `cdad/context/` contains real context and no templ
 - [ ] `SOURCE-BRIEF.*` preserved when applicable.
 - [ ] `.gitignore` merged.
 - [ ] Context populated.
-- [ ] `backlog.md` present; known Epics/Stories reconciled or explicitly absent.
+- [ ] `cdad/backlog.md` present; known Epics/Stories reconciled or explicitly absent.
 - [ ] Human review completed.
 - [ ] Context explicitly confirmed.
 - [ ] `cdad/.frozen` created.
@@ -278,12 +286,15 @@ When an agent deploys CDAD into a host project, it MUST reorganize the installed
 ```text
 /
 ├── AGENTS.md
-├── backlog.md
-├── CDAD-COMPLETION.md
-├── CHANGE-REQUEST.md
-├── INDEX.md
+├── README-CDAD.md
+├── README-CDAD.es.md
+├── SOURCE-BRIEF.*                # if a source document existed
 └── cdad/
     ├── README.md
+    ├── INDEX.md
+    ├── CHANGE-REQUEST.md
+    ├── CDAD-COMPLETION.md
+    ├── backlog.md
     ├── adr/
     ├── context/
     ├── docs/
@@ -293,6 +304,11 @@ When an agent deploys CDAD into a host project, it MUST reorganize the installed
 
 Whichever single adapter was resolved — `.claude/` (Claude Code), `.kiro/` (Kiro), or `.github/copilot-instructions.md` (GitHub Copilot) — remains at the host-project root. Only that one is installed, never more than one.
 
-Do not copy the bootstrap repository's `README-CDAD.md`, `INSTALLATION.md`, or `USAGE.md` into the host-project root. The installed, project-facing CDAD README belongs at `cdad/README.md`.
+`README-CDAD.md` and `README-CDAD.es.md` ARE copied into the host-project
+root — they are the human-facing CDAD entry points and must stay
+discoverable there. `INSTALLATION.md` and `USAGE.md` (and their `.es.md`
+pairs) are **bootstrap-repository reference documentation only** — do not
+copy those two into the host project. The installed, project-facing CDAD
+README belongs at `cdad/README.md`.
 
 The agent must preserve existing host-project files, must not silently overwrite conflicts, and must not run the freeze step automatically. Human review and confirmation precede freezing.

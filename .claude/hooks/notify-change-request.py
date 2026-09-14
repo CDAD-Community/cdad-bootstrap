@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """CDAD - pending change-request notice (UserPromptSubmit hook).
 
-CHANGE-REQUEST.md is edited by the Solution Designer directly, outside any
-Claude Code tool call (the file is in permissions.deny, so the agent cannot
-write it either). No PreToolUse/PostToolUse hook can see that edit - it
-happens outside the tool loop entirely. This hook is the workaround: it
+cdad/CHANGE-REQUEST.md is edited by the Solution Designer directly, outside
+any Claude Code tool call (the file is in permissions.deny, so the agent
+cannot write it either). No PreToolUse/PostToolUse hook can see that edit -
+it happens outside the tool loop entirely. This hook is the workaround: it
 re-reads the file on every user turn and, if the request block has real
 content the agent has not already flagged this session, adds one line of
 context saying so.
@@ -28,7 +28,7 @@ import re
 import sys
 import tempfile
 
-CHANGE_REQUEST = "CHANGE-REQUEST.md"
+CHANGE_REQUEST = "cdad/CHANGE-REQUEST.md"
 
 SECTION_RE = re.compile(
     r"##\s*CDAD Request\s*\n(.*?)(?=\n###|\n---|\Z)", re.DOTALL
@@ -104,11 +104,12 @@ def main() -> int:
                 "hookSpecificOutput": {
                     "hookEventName": "UserPromptSubmit",
                     "additionalContext": (
-                        "CDAD: CHANGE-REQUEST.md currently has a filled-in, "
-                        "unprocessed request. If the Solution Designer has not "
-                        "asked you to work on it, you may mention it exists, "
-                        "but do not read it in depth, analyze it, or draft a "
-                        "proposal unless explicitly told to process it."
+                        "CDAD: cdad/CHANGE-REQUEST.md currently has a "
+                        "filled-in, unprocessed request. If the Solution "
+                        "Designer has not asked you to work on it, you may "
+                        "mention it exists, but do not read it in depth, "
+                        "analyze it, or draft a proposal unless explicitly "
+                        "told to process it."
                     ),
                 }
             }

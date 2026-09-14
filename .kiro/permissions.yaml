@@ -3,7 +3,7 @@ permissions:
   fileWrite:
     deny:
       - "AGENTS.md"
-      - "CHANGE-REQUEST.md"
+      - "cdad/CHANGE-REQUEST.md"
       - ".kiro/settings/**"
       - ".kiro/steering/**"
       - ".kiro/hooks/**"

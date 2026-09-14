@@ -69,7 +69,7 @@ cat <<'MSG'
 cdad-freeze: DONE
 
 cdad/context/ and cdad/adr/ are now read-only for agents. From here, changes
-go through CHANGE-REQUEST.md -> cdad/proposals/ -> you apply.
+go through cdad/CHANGE-REQUEST.md -> cdad/proposals/ -> you apply.
 
 Commit cdad/.frozen. It is versioned on purpose: a clone of a frozen project
 stays frozen.

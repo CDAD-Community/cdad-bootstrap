@@ -16,12 +16,17 @@ Do this before touching the filesystem, and before step 1. Two separate
 questions: which ADE is executing this bootstrap, and which adapter does
 that resolve to.
 
-CDAD Bootstrap ships a portable core (`AGENTS.md`, `INDEX.md`, `backlog.md`,
-`CHANGE-REQUEST.md`, `CDAD-COMPLETION.md`, `cdad/`) plus one adapter per
+CDAD Bootstrap ships a portable core — `AGENTS.md` and `SOURCE-BRIEF.*` (if a
+source document exists) at the project root, plus `cdad/` (which itself
+carries `INDEX.md`, `backlog.md`, `CHANGE-REQUEST.md`, `CDAD-COMPLETION.md`,
+`context/`, `adr/`, `proposals/`, `docs/`, `scripts/`) — plus one adapter per
 supported ADE. The source repository carries every adapter — it is a
 catalog, not a package to install whole. A target project receives the
 portable core plus exactly the adapter matching the ADE actually executing
-the bootstrap, never the whole catalog.
+the bootstrap, never the whole catalog. Workspace hygiene: the project root
+stays the user's — only ADE discovery files, the two CDAD READMEs, and
+`AGENTS.md`/`SOURCE-BRIEF.*` belong there; everything else CDAD owns lives
+under `cdad/`.
 
 | Host ADE | Adapter | `.claude/` | `.kiro/` | `AGENTS.md` | `.github/copilot-instructions.md` |
 |---|---|---|---|---|---|
@@ -85,13 +90,31 @@ Two independent questions. Cross them before doing anything.
 "Real content" means not placeholders like `<layered / hexagonal / ...>` or
 empty table rows.
 
+**Pre-v2.1 root-level artifacts.** Before proceeding, also check the project
+root for `INDEX.md`, `CHANGE-REQUEST.md`, `CDAD-COMPLETION.md`, or
+`backlog.md` sitting there directly (the layout CDAD used before the
+cdad/-relocation). If any are found:
+
+- Do not silently create new copies under `cdad/` alongside them — that
+  produces two canonical artifacts with the same name, which is worse than
+  either problem alone.
+- Do not silently move or delete the root-level files either.
+- Stop and tell the Solution Designer plainly what was found and where, and
+  ask whether to migrate them (move as-is into `cdad/`, preserving content)
+  or leave the project on the old layout for now. Only move on explicit
+  confirmation.
+- If they confirm, move each file's content verbatim (no rewriting) to its
+  `cdad/`-relative path and remove the root copy — report exactly what
+  moved.
+
 ## 2. Look for an existing solution document
 
 Look at the project root only — not subdirectories, not the rest of the repo.
-Anything there that isn't part of the kit itself (`INDEX.md`, `AGENTS.md`,
-`CHANGE-REQUEST.md`, `SOURCE-BRIEF.*`, `.claude/`, `.kiro/`, `cdad/`) and isn't
-ordinary project scaffolding (`package.json`, `.gitignore`, a pre-existing
-`README.md`, `LICENSE`, and the like) is a candidate solution document. The
+Anything there that isn't part of the kit itself (`AGENTS.md`, `SOURCE-BRIEF.*`,
+`README-CDAD.md`, `README-CDAD.es.md`, `.claude/`, `.kiro/`, `.github/`, `cdad/`)
+and isn't ordinary project scaffolding (`package.json`, `.gitignore`, a
+pre-existing `README.md`, `LICENSE`, and the like) is a candidate solution
+document. The
 Solution Designer does not have to name it anything in particular or tell the
 agent it exists — a `.md`, `.txt`, Word, or PDF file sitting there is enough.
 
@@ -110,8 +133,9 @@ without being told, same as Claude Code checking a fixed location for
 
 Wherever it comes from, once it is processed a copy becomes `SOURCE-BRIEF.*` at
 the project root (step 6) — permanent, not archived away into `cdad/docs/` —
-so the reasoning behind the context stays visible and traceable right where
-`CHANGE-REQUEST.md` already lives, not tucked inside `cdad/`.
+so the reasoning behind the context stays visible and traceable right at the
+project root, the one CDAD artifact a human should never have to go looking
+for under `cdad/`.
 
 ## 3. Confirm the document is finished — or stop
 
@@ -190,13 +214,13 @@ Report, then point out three things.
 
 **Report** (from step 0): detected ADE, resolved adapter, files installed,
 adapters explicitly excluded, and whether native support exists for this
-ADE. Give this report in chat, and also append it to `CDAD-COMPLETION.md`
-at the project root, following the exact shape in `AGENTS.md` → *Completion
-report* — that file is the durable record; chat output alone is lost once
-the session ends. Append, don't overwrite, if the file already has an entry
-from a prior bootstrap or re-run.
+ADE. Give this report in chat, and also append it to `cdad/CDAD-COMPLETION.md`,
+following the exact shape in `AGENTS.md` → *Completion report* — that file
+is the durable record; chat output alone is lost once the session ends.
+Append, don't overwrite, if the file already has an entry from a prior
+bootstrap or re-run.
 
-Before stopping, check `backlog.md`: if the source document or the
+Before stopping, check `cdad/backlog.md`: if the source document or the
 conversation surfaced Epics or Stories, ask whether they should be recorded
 there now (via `cdad-propose-change`, form 4, same as any other backlog
 change) — do not silently leave them out, and do not invent ones that
@@ -208,8 +232,8 @@ Point out three things:
 - `stack.md`'s "Locked by" column should reference `ADR-001` for now; later
   decisions get their own ADR through the normal change flow.
 - If a `SOURCE-BRIEF.*` was created, it now sits permanently at the project
-  root next to `CHANGE-REQUEST.md` — the original design intent, kept for
-  anyone who later asks why the context says what it says.
+  root — the original design intent, kept for anyone who later asks why the
+  context says what it says.
 - Run `/context` to confirm only the resolved adapter's always-loaded file
   (`.claude/CLAUDE.md` for Claude Code, `AGENTS.md` itself for Kiro/Codex/
   Copilot), `AGENTS.md`, and `constraints.md` load — the same check the

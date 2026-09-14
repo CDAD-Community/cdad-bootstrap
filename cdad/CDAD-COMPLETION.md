@@ -3,7 +3,7 @@
 > The durable record of what `cdad-bootstrap` did, and the outcome of any
 > later re-run (an ADE/adapter switch, a migration, a re-freeze). Not a
 > decision log for architecture — that is `cdad/adr/`. Not the development
-> line — that is `backlog.md`. This file answers one question: *did the
+> line — that is `cdad/backlog.md`. This file answers one question: *did the
 > CDAD workspace actually get set up correctly, and what does a human still
 > need to do about it?*
 

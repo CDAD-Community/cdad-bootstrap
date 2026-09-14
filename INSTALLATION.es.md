@@ -37,8 +37,8 @@ Antes de copiar CDAD, inspecciona la raíz del proyecto.
 Identifica:
 
 - `AGENTS.md` existente
-- `INDEX.md` existente
-- `CHANGE-REQUEST.md` existente
+- `README-CDAD.md` / `README-CDAD.es.md` existente
+- `cdad/` existente (y, dentro, `INDEX.md`, `CHANGE-REQUEST.md`, `CDAD-COMPLETION.md`, `backlog.md`)
 - `.claude/` existente
 - `.kiro/` existente
 - `.github/copilot-instructions.md` existente
@@ -57,18 +57,27 @@ El workspace final debe contener:
 ```text
 /
 ├── AGENTS.md
-├── backlog.md
-├── CDAD-COMPLETION.md
-├── CHANGE-REQUEST.md
-├── INDEX.md
+├── README-CDAD.md
+├── README-CDAD.es.md
+├── SOURCE-BRIEF.*                # si existió documento fuente
 └── cdad/
     ├── README.md
+    ├── INDEX.md
+    ├── CHANGE-REQUEST.md
+    ├── CDAD-COMPLETION.md
+    ├── backlog.md
     ├── adr/
     ├── context/
     ├── docs/
     ├── proposals/
     └── scripts/
 ```
+
+Solo los archivos de descubrimiento/integración del ADE, los dos READMEs de
+CDAD, `AGENTS.md` y `SOURCE-BRIEF.*` pertenecen a la raíz del proyecto — ver
+*Higiene del workspace* en `README-CDAD.md`. `INDEX.md`, `CHANGE-REQUEST.md`,
+`CDAD-COMPLETION.md` y `backlog.md` se generan directamente bajo `cdad/`,
+nunca en la raíz.
 
 Instala únicamente el adaptador correspondiente al ADE que realmente usás — `.claude/` para Claude Code, `.kiro/` para Kiro, o `.github/copilot-instructions.md` para GitHub Copilot (Codex no necesita ningún archivo adicional). No copies los demás "por las dudas"; el repositorio fuente distribuye todos los adaptadores como catálogo, no como paquete para instalar completo. Ver la matriz de adaptadores de ADE en el README.
 
@@ -184,7 +193,7 @@ El agente debe tratar este repositorio como un contrato documental ejecutable, n
 9. Nunca sobrescribir silenciosamente un archivo existente con el mismo nombre.
 10. Crear el contrato de workspace CDAD: el núcleo portable más únicamente el adaptador resuelto, excluyendo explícitamente los demás.
 11. Mapear la fuente confirmada al contexto gobernado.
-12. Buscar Epics/Stories definidas (documento de requisitos, issue tracker, o conversación previa). Si existen, reconciliarlas en `backlog.md`; si no existe ninguna, decirlo explícitamente en vez de inventarlas.
+12. Buscar Epics/Stories definidas (documento de requisitos, issue tracker, o conversación previa). Si existen, reconciliarlas en `cdad/backlog.md`; si no existe ninguna, decirlo explícitamente en vez de inventarlas.
 13. Solicitar confirmación del contexto generado.
 14. Preservar la fuente como `SOURCE-BRIEF.*`.
 15. Ejecutar freeze solo después de confirmación humana explícita.
@@ -204,7 +213,7 @@ Debe informar:
 - archivos omitidos deliberadamente
 - documento fuente utilizado
 - si el contexto fue confirmado
-- si `backlog.md` está definido y reconciliado con las Epics/Stories conocidas
+- si `cdad/backlog.md` está definido y reconciliado con las Epics/Stories conocidas
 - si se ejecutó freeze
 - si se verificó la protección
 - si se conectó el CI gate
@@ -223,7 +232,7 @@ Debe informar:
 - [ ] `SOURCE-BRIEF.*` preservado cuando corresponde.
 - [ ] `.gitignore` combinado.
 - [ ] Contexto poblado.
-- [ ] `backlog.md` presente; Epics/Stories conocidas reconciliadas o explícitamente ausentes.
+- [ ] `cdad/backlog.md` presente; Epics/Stories conocidas reconciliadas o explícitamente ausentes.
 - [ ] Revisión humana completada.
 - [ ] Contexto confirmado explícitamente.
 - [ ] `cdad/.frozen` creado.
@@ -246,12 +255,15 @@ Cuando un agente despliega CDAD dentro de un proyecto anfitrión, DEBE reorganiz
 ```text
 /
 ├── AGENTS.md
-├── backlog.md
-├── CDAD-COMPLETION.md
-├── CHANGE-REQUEST.md
-├── INDEX.md
+├── README-CDAD.md
+├── README-CDAD.es.md
+├── SOURCE-BRIEF.*                # si existió documento fuente
 └── cdad/
     ├── README.md
+    ├── INDEX.md
+    ├── CHANGE-REQUEST.md
+    ├── CDAD-COMPLETION.md
+    ├── backlog.md
     ├── adr/
     ├── context/
     ├── docs/
@@ -261,6 +273,11 @@ Cuando un agente despliega CDAD dentro de un proyecto anfitrión, DEBE reorganiz
 
 El único adaptador resuelto — `.claude/` (Claude Code), `.kiro/` (Kiro), o `.github/copilot-instructions.md` (GitHub Copilot) — permanece en la raíz del proyecto anfitrión. Solo ese se instala, nunca más de uno.
 
-No copies `README-CDAD.md`, `INSTALLATION.md` ni `USAGE.md` del repositorio Bootstrap a la raíz del proyecto anfitrión. El README orientado al proyecto instalado debe quedar en `cdad/README.md`.
+`README-CDAD.md` y `README-CDAD.es.md` SÍ se copian a la raíz del proyecto
+anfitrión — son los puntos de entrada humanos de CDAD y deben quedar
+descubribles ahí. `INSTALLATION.md` y `USAGE.md` (y sus pares `.es.md`) son
+**documentación de referencia exclusiva del repositorio Bootstrap** — no
+copies esos dos al proyecto anfitrión. El README orientado al proyecto
+instalado debe quedar en `cdad/README.md`.
 
 El agente debe preservar los archivos existentes del proyecto, no sobrescribir conflictos silenciosamente y no ejecutar automáticamente el freeze. La revisión y confirmación humana deben ocurrir antes del freeze.

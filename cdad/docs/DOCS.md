@@ -81,7 +81,7 @@ governed territory, since L3 stays free by design.
 | The stack and architecture map | `cdad/context/stack.md` | when the task needs it |
 | Architecture prose, vision, principles | `cdad/context/` | when the task needs them |
 | Accepted decisions | `cdad/adr/` | when the task needs them |
-| Change requests | `CHANGE-REQUEST.md` (project root) | never |
+| Change requests | `cdad/CHANGE-REQUEST.md` | never |
 | Agent drafts awaiting review | `cdad/proposals/` | never |
 | This document | `cdad/docs/` | never |
 
@@ -92,9 +92,9 @@ therefore has exactly one entry point for change, and it is a plain markdown
 file that is always in the same place.
 
 ```
-CHANGE-REQUEST.md  ->  cdad/proposals/  ->  cdad/adr/ + cdad/context/
-     Designer states      agent drafts         Designer applies
-     intent, 4 lines      a full proposal      after approval
+cdad/CHANGE-REQUEST.md  ->  cdad/proposals/  ->  cdad/adr/ + cdad/context/
+     Designer states          agent drafts         Designer applies
+     intent, 4 lines          a full proposal      after approval
 ```
 
 The asymmetry is the mechanism: `cdad/proposals/` is the only directory under
@@ -141,7 +141,7 @@ writes the marker only once L0 is real. From that point the project is
 governed and those paths are read-only for agents again.
 
 Governance machinery — `AGENTS.md`, `.claude/settings.json`, `.claude/hooks/`,
-`CHANGE-REQUEST.md`, the Kiro equivalents, and the marker itself — has no
+`cdad/CHANGE-REQUEST.md`, the Kiro equivalents, and the marker itself — has no
 regime exception. It is denied in both regimes, always: an agent never drafts
 its own directives or its own enforcement.
 
@@ -206,10 +206,9 @@ that case, same as it is for the regime-conditional write block above.
 
 ### Backlog governance
 
-`backlog.md`, at the project root, is the development line: Epics, Stories,
-current focus, and next work. It is a development-planning artifact, not
-architecture, and it must never become a second source of truth beside
-`cdad/`.
+`cdad/backlog.md` is the development line: Epics, Stories, current focus,
+and next work. It is a development-planning artifact, not architecture, and
+it must never become a second source of truth beside `cdad/context/`.
 
 **Precedence:**
 
@@ -218,7 +217,7 @@ Governed Context / L0
         v
 ADR / governed decisions
         v
-backlog.md
+cdad/backlog.md
         v
 Implementation work
 ```
@@ -231,7 +230,7 @@ way architectural drift is — a Story never silently overrides architecture.
 
 | Change | Governed how |
 |---|---|
-| New/removed Epic or Story, or a material scope/acceptance-criteria change | `CHANGE-REQUEST.md` → `cdad/proposals/` → Solution Designer decision (`cdad-propose-change`, form 4) |
+| New/removed Epic or Story, or a material scope/acceptance-criteria change | `cdad/CHANGE-REQUEST.md` → `cdad/proposals/` → Solution Designer decision (`cdad-propose-change`, form 4) |
 | Story status, *Current Focus*, *Next Work*, *Blocked* updates during already-approved implementation | Direct edit — routine implementation, not a governed decision |
 
 This mirrors the routine-implementation carve-out CDAD already applies to
@@ -239,19 +238,19 @@ architecture ("routine implementation does not require a change request") —
 extended to development-line tracking instead of invented as a separate
 rule. The distinction between "material" and "routine" requires judgment a
 hook cannot make deterministically, so — deliberately, unlike `cdad/context/`
-and `cdad/adr/` — `backlog.md` is **not** in `permissions.deny` or blocked by
-`protect-l0.py`. Its protection is instruction-plane (`AGENTS.md`, the
-`cdad-propose-change` and `cdad-audit` skills) plus one deterministic
+and `cdad/adr/` — `cdad/backlog.md` is **not** in `permissions.deny` or
+blocked by `protect-l0.py`. Its protection is instruction-plane (`AGENTS.md`,
+the `cdad-propose-change` and `cdad-audit` skills) plus one deterministic
 backstop: `cdad/scripts/cdad-check-backlog.sh` fails the build on duplicate
 Epic/Story IDs or a status value outside the agreed vocabulary, and warns on
 an Epic with no Stories yet. What it cannot check — whether an Epic/Story is
 real, current, and actually reflects the work being done, or whether a
-structural change actually went through `CHANGE-REQUEST.md` — is the
+structural change actually went through `cdad/CHANGE-REQUEST.md` — is the
 `cdad-audit` *Backlog reconciliation* pass's job, not the script's.
 
 **Reconciling existing Epics/Stories.** When Epics or Stories are already
 defined somewhere (a requirements doc, an issue tracker, prior conversation)
-but not yet reflected in `backlog.md`, that is a gap to close through
+but not yet reflected in `cdad/backlog.md`, that is a gap to close through
 `cdad-propose-change`, not something to silently ignore or silently rewrite
 the backlog to match. When none are defined at all, say so explicitly and
 ask whether the development line should be defined — never invent business
@@ -261,7 +260,7 @@ stays labeled `Status: Proposed` until accepted.
 **Why not just another ADR-governed file?** An ADR records a decision that,
 once made, rarely changes shape again. A Story is expected to move through
 statuses constantly as normal work happens — routing every status flip
-through `CHANGE-REQUEST.md` would make the backlog too expensive to keep
+through `cdad/CHANGE-REQUEST.md` would make the backlog too expensive to keep
 current, and a stale backlog is worse than no backlog (same failure mode as
 stale context). The bar is calibrated to what actually needs a human
 decision: *what* the project commits to building, not *how far along* it is.
@@ -463,10 +462,12 @@ Always-loaded context drops from roughly 826 lines to roughly 80.
 | `cdad/project-context.md` | Methodology section above |
 | `cdad/context/*` | unchanged in purpose; trimmed and marked read-only |
 | *(new)* | `cdad/context/stack.md` — the visual stack and architecture map |
-| *(new)* | `CHANGE-REQUEST.md` (project root) — the single entry point for changes |
+| *(new)* | `cdad/CHANGE-REQUEST.md` — the single entry point for changes (root in v2, moved under `cdad/` in v2.1) |
 | *(new)* | `cdad/proposals/` — agent-writable staging area |
-| *(new)* | `INDEX.md` — map of every file |
+| *(new)* | `cdad/INDEX.md` — map of every file (root in v2, moved under `cdad/` in v2.1) |
 | *(new)* | `SOURCE-BRIEF.*` (project root) — the original design document, preserved by `cdad-bootstrap` |
+| *(new, v2.1)* | `cdad/backlog.md` — the development line: Epics, Stories, current focus |
+| *(new, v2.1)* | `cdad/CDAD-COMPLETION.md` — durable bootstrap completion record |
 | `cdad/adr/*` | unchanged; template added |
 
 ### Steps

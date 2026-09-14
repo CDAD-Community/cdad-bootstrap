@@ -4,11 +4,18 @@
 permissions.deny already blocks the Write/Edit tools for the unconditional
 machinery paths. This hook covers what static config can't express: shell
 commands (sed -i, tee, redirection, mv, rm, ...) reaching those same
-machinery paths and the two protected root files without going through a
-file tool, and the two-regime condition on cdad/context/ and cdad/adr/ -
-writable pre-freeze, denied once cdad/.frozen exists. A static
-permissions.deny entry can't test for a file's existence, so those two
-paths are deliberately absent from settings.json and live here instead.
+machinery paths and the two protected governance files - cdad/CHANGE-REQUEST.md
+(moved under cdad/ in v2.1) and SOURCE-BRIEF.* (stays at the project root,
+the one human-facing exception) - without going through a file tool, and the
+two-regime condition on cdad/context/ and cdad/adr/ - writable pre-freeze,
+denied once cdad/.frozen exists. A static permissions.deny entry can't test
+for a file's existence, so those two paths are deliberately absent from
+settings.json and live here instead.
+
+ROOT_FILES matches by filename substring, not by directory prefix, so it
+keeps protecting CHANGE-REQUEST.md and SOURCE-BRIEF.* correctly regardless
+of which directory each lives in - the v2.1 relocation of CHANGE-REQUEST.md
+under cdad/ needed no logic change here, only settings.json's static glob.
 
 Machinery (.claude/settings.json, .claude/hooks/) has no regime exception
 and no Write/Edit fallback here either: permissions.deny already blocks the
@@ -37,11 +44,11 @@ MUTATING_SHELL = re.compile(
 )
 
 REASON = (
-    "CDAD governance: cdad/context/, cdad/adr/, CHANGE-REQUEST.md, "
-    "SOURCE-BRIEF.*, and the .claude/ governance machinery itself are owned "
-    "by the Solution Designer. Write your draft to cdad/proposals/ instead - "
-    "that directory is yours. Use the cdad-propose-change or cdad-bootstrap "
-    "skill."
+    "CDAD governance: cdad/context/, cdad/adr/, cdad/CHANGE-REQUEST.md, "
+    "SOURCE-BRIEF.*, and the .claude/ governance machinery itself are "
+    "owned by the Solution Designer. Write your draft to cdad/proposals/ "
+    "instead - that directory is yours. Use the cdad-propose-change or "
+    "cdad-bootstrap skill."
 )
 
 

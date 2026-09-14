@@ -1,8 +1,8 @@
 {
   "permissions": {
     "deny": [
-      "Edit(/CHANGE-REQUEST.md)",
-      "Write(/CHANGE-REQUEST.md)",
+      "Edit(/cdad/CHANGE-REQUEST.md)",
+      "Write(/cdad/CHANGE-REQUEST.md)",
       "Edit(/SOURCE-BRIEF.*)",
       "Write(/SOURCE-BRIEF.*)",
       "Edit(/.claude/settings.json)",

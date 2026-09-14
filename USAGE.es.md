@@ -22,7 +22,7 @@ El trabajo rutinario pertenece a la capa de implementación.
 
 El agente puede modificar código, pruebas, pipelines e infraestructura según las reglas del proyecto.
 
-El trabajo rutinario no requiere un `CHANGE-REQUEST.md`.
+El trabajo rutinario no requiere un `cdad/CHANGE-REQUEST.md`.
 
 ### 3. Detectar un cambio arquitectónico
 
@@ -31,7 +31,7 @@ Si una solicitud afecta una decisión arquitectónica, una tecnología, una regl
 Utiliza:
 
 ```text
-CHANGE-REQUEST.md
+cdad/CHANGE-REQUEST.md
 ```
 
 ### 4. Proponer el cambio
@@ -110,14 +110,14 @@ Si una entrada del stack no tiene un ADR en `Locked by`, debe investigarse como 
 
 ## El backlog
 
-`backlog.md` es la línea de desarrollo: Epics, Stories, foco actual y
+`cdad/backlog.md` es la línea de desarrollo: Epics, Stories, foco actual y
 próximo trabajo. Es un artefacto de planificación, no arquitectura — la
 precedencia es contexto gobernado → ADR → backlog → implementación, y una
 Story nunca sobrescribe una decisión arquitectónica.
 
 Antes de trabajar en desarrollo, establecé la Epic/Story aplicable desde el
 backlog. Agregar, eliminar, o cambiar materialmente una va por
-`CHANGE-REQUEST.md`, igual que un cambio de arquitectura. Actualizar el
+`cdad/CHANGE-REQUEST.md`, igual que un cambio de arquitectura. Actualizar el
 estado de una Story o las listas de Current Focus / Next Work / Blocked
 durante trabajo ya aprobado es una edición directa, no una solicitud de
 cambio.
@@ -256,13 +256,15 @@ de uno — resuelto automáticamente, no elegido copiando archivos después.
 Antes de implementar:
 
 - [ ] Leer el contexto gobernado aplicable.
+- [ ] Establecer la Epic/Story aplicable desde `cdad/backlog.md`, si existe una.
 - [ ] Determinar si la tarea es rutinaria o arquitectónica.
-- [ ] Si es arquitectónica, crear/procesar una solicitud de cambio.
+- [ ] Si es arquitectónica, o una Epic/Story nueva/modificada, crear/procesar una solicitud de cambio.
 
 Durante la implementación:
 
 - [ ] Mantener la implementación alineada con el contexto.
 - [ ] No modificar silenciosamente decisiones gobernadas.
+- [ ] Actualizar el estado de la Story y el Current Focus a medida que avanza el trabajo real.
 - [ ] Preservar la estructura del proyecto anfitrión.
 
 Antes del merge:
@@ -289,12 +291,15 @@ Cuando un agente despliega CDAD dentro de un proyecto anfitrión, DEBE reorganiz
 ```text
 /
 ├── AGENTS.md
-├── backlog.md
-├── CDAD-COMPLETION.md
-├── CHANGE-REQUEST.md
-├── INDEX.md
+├── README-CDAD.md
+├── README-CDAD.es.md
+├── SOURCE-BRIEF.*                # si existió documento fuente
 └── cdad/
     ├── README.md
+    ├── INDEX.md
+    ├── CHANGE-REQUEST.md
+    ├── CDAD-COMPLETION.md
+    ├── backlog.md
     ├── adr/
     ├── context/
     ├── docs/
@@ -304,6 +309,10 @@ Cuando un agente despliega CDAD dentro de un proyecto anfitrión, DEBE reorganiz
 
 El único adaptador resuelto — `.claude/`, `.kiro/`, o `.github/copilot-instructions.md` — permanece en la raíz del proyecto anfitrión. Solo ese se instala.
 
-No copies `README-CDAD.md`, `INSTALLATION.md` ni `USAGE.md` del repositorio Bootstrap a la raíz del proyecto anfitrión. El README orientado al proyecto instalado debe quedar en `cdad/README.md`.
+`README-CDAD.md` y `README-CDAD.es.md` SÍ se copian a la raíz del proyecto
+anfitrión como puntos de entrada humanos. `INSTALLATION.md` y `USAGE.md` (y
+sus pares `.es.md`) son documentación de referencia exclusiva del
+repositorio Bootstrap — no copies esos dos. El README orientado al proyecto
+instalado debe quedar en `cdad/README.md`.
 
 El agente debe preservar los archivos existentes del proyecto, no sobrescribir conflictos silenciosamente y no ejecutar automáticamente el freeze. La revisión y confirmación humana deben ocurrir antes del freeze.

@@ -27,8 +27,8 @@ Implementation work
 ```
 
 If a Story appears to contradict governed context or an accepted ADR, that
-is a finding, not a resolution. Raise it through `CHANGE-REQUEST.md` — a
-Story never silently overrides architecture.
+is a finding, not a resolution. Raise it through `cdad/CHANGE-REQUEST.md` —
+a Story never silently overrides architecture.
 
 ---
 
@@ -93,7 +93,7 @@ What comes after Current Focus.
 
 ---
 Governance: adding or removing an Epic/Story, or materially changing its
-scope or acceptance criteria, goes through `CHANGE-REQUEST.md` ->
+scope or acceptance criteria, goes through `cdad/CHANGE-REQUEST.md` ->
 `cdad/proposals/` -> Solution Designer decision — the same funnel as an
 architecture change. Updating a Story's status, or the *Current Focus* /
 *Next Work* / *Blocked* lists, as part of already-approved implementation

@@ -2,17 +2,17 @@
 
 **This is the front door. To change anything governed — stack, architecture,
 principles, constraints, vision, product-level design intent, or the
-committed development line in `backlog.md` (adding/removing an Epic/Story,
-or materially changing one) — write it here and nowhere else.**
+committed development line in `cdad/backlog.md` (adding/removing an
+Epic/Story, or materially changing one) — write it here and nowhere else.**
 
 This file is not a decision log and not a pull request. It is a formal request
 for architectural or development-line review. The agent may read it, analyze
 it, and draft a proposal, but it does not modify the governed context, ADRs,
-or `backlog.md`'s structure directly.
+or `cdad/backlog.md`'s structure directly.
 
 Overwrite the block below each time. This file is a desk, not an archive — the
-history lives in `cdad/adr/` for architecture and in `backlog.md` itself for
-the development line.
+history lives in `cdad/adr/` for architecture and in `cdad/backlog.md` itself
+for the development line.
 
 ---
 
@@ -48,18 +48,18 @@ Priority: High
    intent.
 2. Tell your agent: *"process the change request"*.
 3. The agent reads this file and the relevant governed context (or
-   `backlog.md`, for a development-line request), then writes a full
+   `cdad/backlog.md`, for a development-line request), then writes a full
    proposal to `cdad/proposals/`.
 4. Review the proposal. Reject it, request changes, or approve it.
 5. On approval: an architecture/context change gets an ADR and the exact
    stack map delta, which you apply. A development-line change is applied
-   directly to `backlog.md` — it does not get an ADR unless it also touches
-   governed context.
+   directly to `cdad/backlog.md` — it does not get an ADR unless it also
+   touches governed context.
 
 If you are only asking a question ("is this even possible?", "what would this
 cost us?"), ask in chat instead. This file is for changes you intend to make.
 
-Routine Story status updates in `backlog.md` (moving a Story through
+Routine Story status updates in `cdad/backlog.md` (moving a Story through
 `Ready` → `In Progress` → `Done` as work actually happens) do not belong
 here either — that is routine implementation, not a change request. This
 file is for adding, removing, or materially changing what the backlog

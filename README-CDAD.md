@@ -19,8 +19,9 @@ Works with Claude Code, Kiro, Copilot and Codex · CC BY 4.0
 - [Usage flow](#usage-flow)
 - [ADE adapters](#ade-adapters)
 - [Mandatory CDAD workspace scaffolding](#mandatory-cdad-workspace-scaffolding)
+- [Workspace hygiene](#workspace-hygiene)
 - [The problem](#the-problem)
-- [Two files you will always touch](#two-files-you-will-always-touch)
+- [The two files you will always touch](#the-two-files-you-will-always-touch)
 - [The map](#the-map)
 - [Changing something](#changing-something)
 - [Backlog](#backlog)
@@ -136,7 +137,7 @@ one native adapter. The CDAD Bootstrap source distribution contains every
 adapter because it is a catalog; installing all of them into a project is
 not the intended flow.
 
-**Portable core:** `AGENTS.md`, `backlog.md`, `INDEX.md`, `CHANGE-REQUEST.md`, `CDAD-COMPLETION.md`, `cdad/`.
+**Portable core:** `AGENTS.md`, `README-CDAD.md`, `README-CDAD.es.md`, `SOURCE-BRIEF.*` (if a source document existed) at the project root, plus `cdad/` itself — carrying `INDEX.md`, `CHANGE-REQUEST.md`, `CDAD-COMPLETION.md`, `backlog.md`, `context/`, `adr/`, `proposals/`, `docs/`, `scripts/`.
 
 | Host ADE | Adapter | `.claude/` | `.kiro/` | `AGENTS.md` | `.github/copilot-instructions.md` |
 | --- | --- | :---: | :---: | :---: | :---: |
@@ -185,12 +186,15 @@ When bootstrapping CDAD into a project, **the AI coding agent/ADE MUST create an
 ```text
 /
 ├── AGENTS.md
-├── backlog.md
-├── CDAD-COMPLETION.md
-├── CHANGE-REQUEST.md
-├── INDEX.md
+├── README-CDAD.md
+├── README-CDAD.es.md
+├── SOURCE-BRIEF.*                # if a source document existed
 └── cdad/
     ├── README.md
+    ├── INDEX.md
+    ├── CHANGE-REQUEST.md
+    ├── CDAD-COMPLETION.md
+    ├── backlog.md
     ├── adr/
     ├── context/
     ├── docs/
@@ -200,7 +204,8 @@ When bootstrapping CDAD into a project, **the AI coding agent/ADE MUST create an
 
 ### Scaffolding rules
 
-- `AGENTS.md`, `backlog.md`, `CDAD-COMPLETION.md`, `CHANGE-REQUEST.md`, and `INDEX.md` MUST remain at the project root.
+- `AGENTS.md`, `README-CDAD.md`, `README-CDAD.es.md`, and `SOURCE-BRIEF.*` (when one exists) MUST remain at the project root — nothing else CDAD owns does.
+- `INDEX.md`, `CHANGE-REQUEST.md`, `CDAD-COMPLETION.md`, and `backlog.md` MUST be generated directly under `cdad/` — never written to the project root and moved afterward.
 - The CDAD bootstrap README MUST be installed as `cdad/README.md`.
 - CDAD-owned directories (`adr/`, `context/`, `docs/`, `proposals/`, `scripts/`) MUST remain under `cdad/`.
 - The agent MUST NOT move, rename, duplicate, or redistribute CDAD artifacts outside this structure.
@@ -208,6 +213,35 @@ When bootstrapping CDAD into a project, **the AI coding agent/ADE MUST create an
 - ADE-specific files required by the host tool — `.claude/`, `.kiro/`, or `.github/copilot-instructions.md` — remain at their required locations and do not change the CDAD workspace contract. Only the adapter matching the ADE executing the bootstrap is installed; see [ADE adapters](#ade-adapters).
 
 This structure is a **CDAD bootstrap contract**, not merely a documentation convention.
+
+---
+
+## Workspace hygiene
+
+**CDAD keeps governed development artifacts under `cdad/`. Only ADE
+discovery/integration files and human-facing CDAD entry points remain at
+the project root.**
+
+The project root belongs to the user's project; `cdad/` belongs to CDAD
+governance. Before this principle, CDAD's own governance files (`INDEX.md`,
+`CHANGE-REQUEST.md`, `CDAD-COMPLETION.md`, `backlog.md`) sat directly at the
+project root alongside the user's actual application — visual and cognitive
+noise for both the developer and any agent scanning the root for what the
+project actually is.
+
+The test: *if I am a developer using CDAD, does the project root look like
+my project, while `cdad/` clearly contains the CDAD governance machinery?*
+The root should contain only:
+
+- ADE discovery/integration files that genuinely require root/native placement (`.claude/`, `.kiro/`, `.github/copilot-instructions.md`, or `AGENTS.md` itself).
+- CDAD's human-facing entry points (`README-CDAD.md`, `README-CDAD.es.md`, `SOURCE-BRIEF.*`).
+- The user's own project files.
+
+This is a structural change, not a cleanup step: the bootstrap process
+generates these artifacts directly under `cdad/` — it never writes them to
+the root and asks you to tidy up afterward, the way earlier versions asked
+you to delete unused ADE adapters. See *ADE adapters* above for the same
+selective-generation principle applied to tool integrations.
 
 ---
 
@@ -223,16 +257,20 @@ CDAD makes architecture and its surrounding context explicit, protected, and mac
 
 ---
 
-## Two files you will always touch
-
-Everything else in this kit is supporting machinery. These two live at the project root, not inside `cdad/`, so they remain easy to find:
+## The two files you will always touch
 
 | File | What it is | When you touch it |
 | --- | --- | --- |
-| **`SOURCE-BRIEF.*`** | Your original design: vision, architecture, stack, constraints, in your own words | Once, before or during setup |
-| **`CHANGE-REQUEST.md`** | The front door for a requested change | Whenever a governed decision needs to change |
+| **`SOURCE-BRIEF.*`** (project root) | Your original design: vision, architecture, stack, constraints, in your own words | Once, before or during setup |
+| **`cdad/CHANGE-REQUEST.md`** | The front door for a requested change | Whenever a governed decision or the development line needs to change |
 
-`cdad/context/stack.md` is the file you will read most often — the one-screen map of what the system is — but it is an output, not a file you should normally edit by hand. Approved changes reach it through `CHANGE-REQUEST.md`, never by silently editing the governed map.
+`SOURCE-BRIEF.*` stays at the project root — the one CDAD artifact that is
+purely yours to find quickly, never governance machinery. `CHANGE-REQUEST.md`
+lives under `cdad/` with the rest of what it governs, but it is still the
+single entry point you use constantly; it never gets harder to reach just
+because it moved.
+
+`cdad/context/stack.md` is the file you will read most often — the one-screen map of what the system is — but it is an output, not a file you should normally edit by hand. Approved changes reach it through `cdad/CHANGE-REQUEST.md`, never by silently editing the governed map.
 
 ---
 
@@ -263,12 +301,12 @@ A stack-table row without an ADR in its **Locked by** column is itself a finding
 There is one entry point. You do not hunt for the right governed file.
 
 ```text
-CHANGE-REQUEST.md  ->  cdad/proposals/  ->  cdad/adr/ + cdad/context/stack.md
-      you state intent      agent drafts           you approve and apply
-      always writable       agent writable         governed/protected
+cdad/CHANGE-REQUEST.md  ->  cdad/proposals/  ->  cdad/adr/ + cdad/context/stack.md
+      you state intent          agent drafts           you approve and apply
+      always writable           agent writable         governed/protected
 ```
 
-Fill in the request block in `CHANGE-REQUEST.md` at the project root with what needs to change, why, trigger, scope, impact, risk, and priority.
+Fill in the request block in `cdad/CHANGE-REQUEST.md` with what needs to change, why, trigger, scope, impact, risk, and priority.
 
 Then ask the agent to process the change request.
 
@@ -291,13 +329,13 @@ Routine implementation work does not need to enter this flow. If ordinary implem
 
 ## Backlog
 
-`backlog.md`, at the project root, is the development line: Epics, Stories,
-and the work currently expected to be built. It answers "what exists, what's
-next, what's blocked" — it is a planning artifact, not architecture, and
-never a second source of truth beside `cdad/`.
+`cdad/backlog.md` is the development line: Epics, Stories, and the work
+currently expected to be built. It answers "what exists, what's next,
+what's blocked" — it is a planning artifact, not architecture, and never a
+second source of truth beside `cdad/context/`.
 
 ```text
-Governed Context / L0  ->  ADR  ->  backlog.md  ->  Implementation
+Governed Context / L0  ->  ADR  ->  cdad/backlog.md  ->  Implementation
 ```
 
 A Story that contradicts governed context or an accepted ADR is a finding,
@@ -307,11 +345,11 @@ not a resolution — it never silently overrides the architecture.
 
 | Change | Path |
 | --- | --- |
-| New/removed Epic or Story, or a material scope/acceptance-criteria change | `CHANGE-REQUEST.md` → `cdad/proposals/` → Solution Designer decision |
+| New/removed Epic or Story, or a material scope/acceptance-criteria change | `cdad/CHANGE-REQUEST.md` → `cdad/proposals/` → Solution Designer decision |
 | Story status, *Current Focus*, *Next Work*, *Blocked* updates during already-approved work | Direct edit — routine implementation, not a governed decision |
 
 Before development work, the agent establishes the applicable Epic/Story
-from `backlog.md`. If Epics/Stories are defined elsewhere but missing from
+from `cdad/backlog.md`. If Epics/Stories are defined elsewhere but missing from
 the backlog, that gap is reconciled through the normal change process — the
 agent does not silently ignore them, and does not silently rewrite the
 backlog to match either. If none are defined at all, the agent says so
@@ -364,14 +402,18 @@ The second principle follows: **the layer determines both who may edit and when 
 ## Structure
 
 ```text
-INDEX.md                        # map of every file — start here
 AGENTS.md                       # portable core rules
-backlog.md                      # development line — Epics, Stories, current focus
-CHANGE-REQUEST.md               # front door for change intent
+README-CDAD.md                  # this file — setup, tool support
+README-CDAD.es.md               # Spanish mirror
 SOURCE-BRIEF.*                  # original design, preserved after bootstrap
 .gitignore                      # merge with the host project's existing file
 │
-cdad/
+cdad/                           # CDAD governance — everything below is generated here, not at root
+├── README.md                   # project-facing operational README
+├── INDEX.md                    # map of every file — start here
+├── CHANGE-REQUEST.md           # front door for change intent
+├── CDAD-COMPLETION.md          # durable bootstrap completion record
+├── backlog.md                  # development line — Epics, Stories, current focus
 ├── proposals/                  # agent drafts awaiting review
 ├── context/                    # L0 — governed context
 │   ├── stack.md                # the seven-view architecture map
@@ -413,7 +455,9 @@ cdad/
 
 `AGENTS.md` remains at the root because Kiro, Codex, and Copilot read it by convention.
 
-`CHANGE-REQUEST.md` and `SOURCE-BRIEF.*` remain at the root for human discoverability: they are the two files the Solution Designer needs to find quickly.
+`README-CDAD.md`/`.es.md` remain at the root because they are the human-facing entry points — the first thing anyone opening the project should be able to find, not something buried under `cdad/`.
+
+`SOURCE-BRIEF.*` remains at the root for the same reason: it is the Solution Designer's own original design, in their own words, and should stay as discoverable as the READMEs. Everything else CDAD owns — including `CHANGE-REQUEST.md`, now that it has one — lives under `cdad/`; see [Workspace hygiene](#workspace-hygiene).
 
 ---
 
@@ -430,7 +474,7 @@ cdad/
 
 ## Getting started
 
-1. Copy the portable core — `INDEX.md`, `AGENTS.md`, `backlog.md`, `CHANGE-REQUEST.md`, `CDAD-COMPLETION.md`, `cdad/` (including `cdad/docs/` and `cdad/scripts/`) — into the project root, plus only the adapter matching your ADE: `.claude/` (including `.claude/CLAUDE.md`) for Claude Code, `.kiro/` for Kiro, `.github/copilot-instructions.md` for GitHub Copilot, or nothing extra for Codex. See [ADE adapters](#ade-adapters); do not copy the other adapters in "just in case."
+1. Copy the portable core — `AGENTS.md`, `README-CDAD.md`, `README-CDAD.es.md`, and `cdad/` in full (including `cdad/docs/`, `cdad/scripts/`, and the `INDEX.md`/`CHANGE-REQUEST.md`/`CDAD-COMPLETION.md`/`backlog.md` already inside it) — into the project root, plus only the adapter matching your ADE: `.claude/` (including `.claude/CLAUDE.md`) for Claude Code, `.kiro/` for Kiro, `.github/copilot-instructions.md` for GitHub Copilot, or nothing extra for Codex. See [ADE adapters](#ade-adapters); do not copy the other adapters in "just in case."
 2. Merge the kit's `.gitignore` into your existing `.gitignore`; do not overwrite an existing project file.
 3. Run the `cdad-bootstrap` skill (for example, “bootstrap CDAD” or “set up CDAD”) instead of filling `cdad/context/` by hand — it performs step 1 above for you, deterministically.
 4. If you prefer to author the context manually, start with `cdad/context/stack.md`. Leave a cell empty rather than guessing; an explicit unknown is preferable to an invented decision.
@@ -451,7 +495,7 @@ If you are upgrading a project bootstrapped before the two-regime model existed,
 
 immediately after the upgrade when `cdad/context/` already contains real content. Until the freeze marker exists, that context may remain agent-writable.
 
-Full file map: [`INDEX.md`](INDEX.md) · Migration guidance: [`cdad/docs/DOCS.md#migrating-from-cdad-v1`](cdad/docs/DOCS.md#migrating-from-cdad-v1)
+Full file map: [`cdad/INDEX.md`](cdad/INDEX.md) · Migration guidance: [`cdad/docs/DOCS.md#migrating-from-cdad-v1`](cdad/docs/DOCS.md#migrating-from-cdad-v1)
 
 ---
 
@@ -506,9 +550,9 @@ infra/AGENTS.md
 ## What you maintain
 
 - `cdad/context/` and `cdad/adr/`: applied through the governed process and not directly written by an agent once frozen.
-- `backlog.md`: Epics/Stories change through `CHANGE-REQUEST.md` like an architectural decision; status and focus updates during routine implementation are direct edits.
-- `CHANGE-REQUEST.md`: your entry point whenever a governed decision or the committed development line needs to change.
-- `SOURCE-BRIEF.*`: written once during bootstrap and preserved as the original source.
+- `cdad/backlog.md`: Epics/Stories change through `cdad/CHANGE-REQUEST.md` like an architectural decision; status and focus updates during routine implementation are direct edits.
+- `cdad/CHANGE-REQUEST.md`: your entry point whenever a governed decision or the committed development line needs to change.
+- `SOURCE-BRIEF.*`: written once during bootstrap and preserved as the original source, at the project root.
 - Your resolved adapter (`.claude/`, `.kiro/`, or `.github/copilot-instructions.md`) and `cdad/scripts/`: CDAD runtime/integration assets that normally require little change beyond path configuration.
 
 ---

@@ -9,14 +9,14 @@ artifact without ever touching `cdad/context/` or `cdad/adr/`.
 ## Flow
 
 ```
-CHANGE-REQUEST.md   →   cdad/proposals/   →   cdad/adr/ + cdad/context/
-(project root)                                or backlog.md (dev-line changes)
-   you write intent     agent drafts          you apply, after approval
-   (always writable)    (agent writable)
+cdad/CHANGE-REQUEST.md  →  cdad/proposals/  →  cdad/adr/ + cdad/context/
+                                                or cdad/backlog.md (dev-line changes)
+   you write intent         agent drafts        you apply, after approval
+   (always writable)        (agent writable)
 ```
 
 A development-line proposal (new/removed Epic or Story, or a material scope
-change — `cdad-propose-change` form 4) is applied to `backlog.md`, not
+change — `cdad-propose-change` form 4) is applied to `cdad/backlog.md`, not
 `cdad/adr/`, unless it also happens to touch governed context. Routine Story
 status updates never pass through here at all — they're direct edits.
 

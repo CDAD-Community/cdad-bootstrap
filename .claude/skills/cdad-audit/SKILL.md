@@ -1,6 +1,6 @@
 ---
 name: cdad-audit
-description: Audit whether the governed context under cdad/context/ still matches the actual codebase, and whether backlog.md is reconciled with defined Epics/Stories. Use when the user asks to check context freshness, verify the docs are still accurate, review architectural drift, reconcile the backlog, or run a CDAD audit — typically before a release, after a large merge, or when onboarding to an unfamiliar repo. The scheduled counterpart to the PostToolUse drift detector: same signals, same response path, full sweep instead of one file.
+description: Audit whether the governed context under cdad/context/ still matches the actual codebase, and whether cdad/backlog.md is reconciled with defined Epics/Stories. Use when the user asks to check context freshness, verify the docs are still accurate, review architectural drift, reconcile the backlog, or run a CDAD audit — typically before a release, after a large merge, or when onboarding to an unfamiliar repo. The scheduled counterpart to the PostToolUse drift detector: same signals, same response path, full sweep instead of one file.
 ---
 
 # Audit context freshness
@@ -58,7 +58,7 @@ twice and the two definitions ageing apart.
 
 ## Backlog reconciliation
 
-`backlog.md` is not architecture, but it is still expected to stay honest.
+`cdad/backlog.md` is not architecture, but it is still expected to stay honest.
 Run `cdad/scripts/cdad-check-backlog.sh` first for the deterministic part
 (duplicate Epic/Story IDs, invalid status values) — do not re-derive that by
 hand. Then check what only judgment can catch:
@@ -77,7 +77,7 @@ yourself — a structural correction goes through `cdad-propose-change` (form
 4) like any other backlog change. Only routine status corrections you can
 justify from the evidence above (e.g. a Story is provably `Done`) may be
 applied directly, the same way any other routine implementation work would
-update backlog.md.
+update cdad/backlog.md.
 
 ## Classification
 

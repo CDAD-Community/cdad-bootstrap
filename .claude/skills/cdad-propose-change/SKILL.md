@@ -1,6 +1,6 @@
 ---
 name: cdad-propose-change
-description: Produce a CDAD change proposal instead of applying a change directly. Use when the user says to process the change request, when an architectural change is required, when a governed context file under cdad/context/ is wrong or outdated, when implementation code conflicts with the governed context, or when backlog.md needs an Epic/Story added, removed, or materially changed. Triggers on any request to change architecture, paradigm, module boundaries, frameworks, cloud services, or infrastructure tooling, on any request to change the committed development line, and whenever a permission denial points at cdad/context/, cdad/adr/, or CHANGE-REQUEST.md.
+description: Produce a CDAD change proposal instead of applying a change directly. Use when the user says to process the change request, when an architectural change is required, when a governed context file under cdad/context/ is wrong or outdated, when implementation code conflicts with the governed context, or when cdad/backlog.md needs an Epic/Story added, removed, or materially changed. Triggers on any request to change architecture, paradigm, module boundaries, frameworks, cloud services, or infrastructure tooling, on any request to change the committed development line, and whenever a permission denial points at cdad/context/, cdad/adr/, or cdad/CHANGE-REQUEST.md.
 ---
 
 # CDAD change proposal
@@ -11,8 +11,8 @@ not create the ADR yourself.
 
 ## Where the request comes from
 
-If the user says "process the change request", read `CHANGE-REQUEST.md`, at
-the project root, first. It holds the Solution Designer's stated intent. If
+If the user says "process the change request", read `cdad/CHANGE-REQUEST.md`
+first. It holds the Solution Designer's stated intent. If
 the request block is empty or unchanged from the template, say so and stop —
 do not invent one.
 
@@ -28,7 +28,7 @@ Otherwise the request is whatever the user just described.
 Write the proposal to `cdad/proposals/PROPOSAL-<short-kebab-summary>.md`. That
 directory is the only place under `cdad/` you may write.
 
-Do not edit `CHANGE-REQUEST.md` — not to clear it, not to mark it
+Do not edit `cdad/CHANGE-REQUEST.md` — not to clear it, not to mark it
 processed, not to tidy it. It is the Solution Designer's desk.
 
 ## Before writing
@@ -39,7 +39,7 @@ relevant context files and any ADR the affected stack rows point to in their
 proposal.
 
 If the request is about the development line instead — a new Epic/Story, or
-a material change to one's scope or acceptance criteria — read `backlog.md`
+a material change to one's scope or acceptance criteria — read `cdad/backlog.md`
 first, and check whether it contradicts governed context or an accepted
 ADR before drafting (see backlog *Precedence* in `AGENTS.md`). Routine Story
 status updates during already-approved work are not a change request at
@@ -106,7 +106,7 @@ Status: Requires human review
 
 ## 4. Development-line change
 
-Use when `backlog.md` needs an Epic or Story added, removed, or materially
+Use when `cdad/backlog.md` needs an Epic or Story added, removed, or materially
 changed in scope or acceptance criteria. Not for routine status updates
 during already-approved work — those are direct edits, not a proposal.
 
@@ -115,7 +115,7 @@ Proposed Backlog Change
 
 Kind: <new Epic / new Story / remove / material scope change>
 Epic/Story ID: <EPIC-NNN / STORY-NNN, or "new" if not yet assigned>
-Current state: <what backlog.md says today, or "none" if new>
+Current state: <what cdad/backlog.md says today, or "none" if new>
 Suggested change:
 Reason:
 Contradicts governed context or an ADR?: <no / yes — cite file:line>
@@ -147,5 +147,5 @@ in chat, so the decision can be made without opening the file. Then stop.
 Once an architecture, context, or conflict proposal (forms 1-3) is approved,
 the decision is recorded with the `cdad-adr` skill. A development-line
 proposal (form 4) is not an architectural decision — once approved, the
-Solution Designer applies it directly to `backlog.md`; it does not get an
+Solution Designer applies it directly to `cdad/backlog.md`; it does not get an
 ADR unless it also happens to touch governed context.

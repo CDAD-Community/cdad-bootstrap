@@ -8,9 +8,9 @@
 # deterministic instead of a visual scan.
 #
 # What this does NOT enforce: whether an Epic/Story addition or removal went
-# through CHANGE-REQUEST.md. That distinction (structural change vs. routine
-# status update) requires judgment this script cannot make - it stays an
-# instruction-plane rule in AGENTS.md, not a control-plane one here.
+# through cdad/CHANGE-REQUEST.md. That distinction (structural change vs.
+# routine status update) requires judgment this script cannot make - it
+# stays an instruction-plane rule in AGENTS.md, not a control-plane one here.
 #
 # Usage:
 #   cdad/scripts/cdad-check-backlog.sh [path-to-backlog.md]
@@ -19,7 +19,7 @@
 
 set -euo pipefail
 
-BACKLOG="${1:-backlog.md}"
+BACKLOG="${1:-cdad/backlog.md}"
 
 if [ ! -f "$BACKLOG" ]; then
   echo "cdad-check-backlog: $BACKLOG not found." >&2

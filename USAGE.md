@@ -22,7 +22,7 @@ Routine implementation belongs to the implementation layer.
 
 The agent may modify source code, tests, pipelines, and infrastructure according to the project's rules.
 
-Routine implementation does not require a `CHANGE-REQUEST.md`.
+Routine implementation does not require a `cdad/CHANGE-REQUEST.md`.
 
 ### 3. Detect an architectural change
 
@@ -31,7 +31,7 @@ If a requested change affects an architectural decision, technology choice, depe
 Use:
 
 ```text
-CHANGE-REQUEST.md
+cdad/CHANGE-REQUEST.md
 ```
 
 ### 4. Propose the change
@@ -110,14 +110,14 @@ If a stack entry has no ADR in its `Locked by` field, investigate it as an ungov
 
 ## The backlog
 
-`backlog.md` is the development line: Epics, Stories, current focus, and
+`cdad/backlog.md` is the development line: Epics, Stories, current focus, and
 next work. It is a planning artifact, not architecture — precedence is
 governed context → ADR → backlog → implementation, and a Story never
 overrides an architectural decision.
 
 Before development work, establish the applicable Epic/Story from the
 backlog. Adding, removing, or materially changing one goes through
-`CHANGE-REQUEST.md`, same as an architecture change. Updating a Story's
+`cdad/CHANGE-REQUEST.md`, same as an architecture change. Updating a Story's
 status or the Current Focus / Next Work / Blocked lists during
 already-approved work is a direct edit, not a change request.
 
@@ -257,7 +257,7 @@ resolved automatically, not chosen by copying files around afterward.
 Before implementation:
 
 - [ ] Read applicable governed context.
-- [ ] Establish the applicable Epic/Story from `backlog.md`, if one exists.
+- [ ] Establish the applicable Epic/Story from `cdad/backlog.md`, if one exists.
 - [ ] Determine whether the task is routine or architectural.
 - [ ] If architectural, or a new/changed Epic/Story, create/process a change request.
 
@@ -292,12 +292,15 @@ When an agent deploys CDAD into a host project, it MUST reorganize the installed
 ```text
 /
 ├── AGENTS.md
-├── backlog.md
-├── CDAD-COMPLETION.md
-├── CHANGE-REQUEST.md
-├── INDEX.md
+├── README-CDAD.md
+├── README-CDAD.es.md
+├── SOURCE-BRIEF.*                # if a source document existed
 └── cdad/
     ├── README.md
+    ├── INDEX.md
+    ├── CHANGE-REQUEST.md
+    ├── CDAD-COMPLETION.md
+    ├── backlog.md
     ├── adr/
     ├── context/
     ├── docs/
@@ -307,6 +310,10 @@ When an agent deploys CDAD into a host project, it MUST reorganize the installed
 
 Whichever single adapter was resolved — `.claude/`, `.kiro/`, or `.github/copilot-instructions.md` — remains at the host-project root. Only that one is installed.
 
-Do not copy the bootstrap repository's `README-CDAD.md`, `INSTALLATION.md`, or `USAGE.md` into the host-project root. The installed, project-facing CDAD README belongs at `cdad/README.md`.
+`README-CDAD.md` and `README-CDAD.es.md` ARE copied into the host-project
+root as the human-facing entry points. `INSTALLATION.md` and `USAGE.md`
+(and their `.es.md` pairs) are bootstrap-repository reference documentation
+only — do not copy those two. The installed, project-facing CDAD README
+belongs at `cdad/README.md`.
 
 The agent must preserve existing host-project files, must not silently overwrite conflicts, and must not run the freeze step automatically. Human review and confirmation precede freezing.

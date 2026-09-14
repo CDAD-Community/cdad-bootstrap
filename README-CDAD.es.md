@@ -21,8 +21,9 @@ Compatible con Claude Code, Kiro, Codex y GitHub Copilot · CC BY 4.0
 - [Instalación manual](#instalación-manual)
 - [Instalación asistida por agente](#instalación-asistida-por-agente)
 - [Scaffolding obligatorio del workspace CDAD](#scaffolding-obligatorio-del-workspace-cdad)
+- [Higiene del workspace](#higiene-del-workspace)
 - [El problema](#el-problema)
-- [Dos archivos que siempre tocarás](#dos-archivos-que-siempre-tocarás)
+- [Los dos archivos que siempre tocarás](#los-dos-archivos-que-siempre-tocarás)
 - [El mapa](#el-mapa)
 - [Cambiar algo](#cambiar-algo)
 - [Backlog](#backlog)
@@ -138,7 +139,7 @@ completo, nunca más de un adaptador nativo. La distribución fuente de CDAD
 Bootstrap contiene todos los adaptadores porque es un catálogo; instalarlos
 todos en un proyecto no es el flujo previsto.
 
-**Núcleo portable:** `AGENTS.md`, `backlog.md`, `INDEX.md`, `CHANGE-REQUEST.md`, `CDAD-COMPLETION.md`, `cdad/`.
+**Núcleo portable:** `AGENTS.md`, `README-CDAD.md`, `README-CDAD.es.md`, `SOURCE-BRIEF.*` (si existió documento fuente) en la raíz del proyecto, más `cdad/` en sí — que contiene `INDEX.md`, `CHANGE-REQUEST.md`, `CDAD-COMPLETION.md`, `backlog.md`, `context/`, `adr/`, `proposals/`, `docs/`, `scripts/`.
 
 | ADE anfitrión | Adaptador | `.claude/` | `.kiro/` | `AGENTS.md` | `.github/copilot-instructions.md` |
 | --- | --- | :---: | :---: | :---: | :---: |
@@ -189,12 +190,15 @@ Al realizar el bootstrap de CDAD en un proyecto, **el agente de programación co
 ```text
 /
 ├── AGENTS.md
-├── backlog.md
-├── CDAD-COMPLETION.md
-├── CHANGE-REQUEST.md
-├── INDEX.md
+├── README-CDAD.md
+├── README-CDAD.es.md
+├── SOURCE-BRIEF.*                # si existió documento fuente
 └── cdad/
     ├── README.md
+    ├── INDEX.md
+    ├── CHANGE-REQUEST.md
+    ├── CDAD-COMPLETION.md
+    ├── backlog.md
     ├── adr/
     ├── context/
     ├── docs/
@@ -204,7 +208,8 @@ Al realizar el bootstrap de CDAD en un proyecto, **el agente de programación co
 
 ### Reglas del scaffolding
 
-- `AGENTS.md`, `backlog.md`, `CDAD-COMPLETION.md`, `CHANGE-REQUEST.md` e `INDEX.md` DEBEN permanecer en la raíz.
+- `AGENTS.md`, `README-CDAD.md`, `README-CDAD.es.md` y `SOURCE-BRIEF.*` (cuando existe) DEBEN permanecer en la raíz — nada más de lo que posee CDAD lo hace.
+- `INDEX.md`, `CHANGE-REQUEST.md`, `CDAD-COMPLETION.md` y `backlog.md` DEBEN generarse directamente bajo `cdad/` — nunca escribirse en la raíz para moverlos después.
 - El README de CDAD Bootstrap DEBE instalarse como `cdad/README.md`.
 - Los directorios administrados por CDAD (`adr/`, `context/`, `docs/`, `proposals/`, `scripts/`) DEBEN permanecer bajo `cdad/`.
 - El agente NO DEBE mover, renombrar, duplicar ni redistribuir artefactos de CDAD fuera de esta estructura.
@@ -212,6 +217,38 @@ Al realizar el bootstrap de CDAD en un proyecto, **el agente de programación co
 - Los archivos específicos del ADE — `.claude/`, `.kiro/` o `.github/copilot-instructions.md` — permanecen en sus ubicaciones requeridas y no modifican el contrato de workspace de CDAD. Solo se instala el adaptador correspondiente al ADE que ejecuta el bootstrap; ver [Adaptadores de ADE](#adaptadores-de-ade).
 
 Esta estructura es un **contrato de bootstrap de CDAD**, no solamente una convención documental.
+
+---
+
+## Higiene del workspace
+
+**CDAD mantiene sus artefactos de desarrollo gobernado dentro de `cdad/`.
+Solo permanecen en la raíz los archivos necesarios para el
+descubrimiento/integración del ADE y los puntos de entrada humanos de
+CDAD.**
+
+La raíz del proyecto pertenece al proyecto del usuario; `cdad/` pertenece a
+la gobernanza de CDAD. Antes de este principio, los propios archivos de
+gobernanza de CDAD (`INDEX.md`, `CHANGE-REQUEST.md`, `CDAD-COMPLETION.md`,
+`backlog.md`) se sentaban directamente en la raíz del proyecto junto a la
+aplicación real del usuario — ruido visual y cognitivo tanto para el
+desarrollador como para cualquier agente que escanee la raíz para entender
+qué es el proyecto.
+
+La prueba: *si soy un desarrollador usando CDAD, ¿la raíz del proyecto se
+ve como mi proyecto, mientras `cdad/` contiene claramente la maquinaria de
+gobernanza de CDAD?* La raíz debe contener solamente:
+
+- Archivos de descubrimiento/integración del ADE que genuinamente requieren ubicación en la raíz/nativa (`.claude/`, `.kiro/`, `.github/copilot-instructions.md`, o `AGENTS.md` en sí).
+- Los puntos de entrada humanos de CDAD (`README-CDAD.md`, `README-CDAD.es.md`, `SOURCE-BRIEF.*`).
+- Los propios archivos del proyecto del usuario.
+
+Esto es un cambio estructural, no un paso de limpieza: el proceso de
+bootstrap genera estos artefactos directamente bajo `cdad/` — nunca los
+escribe en la raíz pidiéndote que ordenes después, como versiones
+anteriores pedían borrar adaptadores de ADE no usados. Ver *Adaptadores de
+ADE* arriba para el mismo principio de generación selectiva aplicado a las
+integraciones de herramientas.
 
 ---
 
@@ -227,16 +264,16 @@ CDAD convierte la arquitectura y su contexto en activos explícitos, protegidos 
 
 ---
 
-## Dos archivos que siempre tocarás
-
-Todo lo demás en este kit es infraestructura de soporte. Estos dos viven en la raíz del proyecto, no dentro de `cdad/`, para que sean fáciles de encontrar:
+## Los dos archivos que siempre tocarás
 
 | Archivo | Qué es | Cuándo lo tocas |
 | --- | --- | --- |
-| **`SOURCE-BRIEF.*`** | Tu diseño original: visión, arquitectura, stack, restricciones, en tus propias palabras | Una vez, antes o durante la configuración |
-| **`CHANGE-REQUEST.md`** | La puerta de entrada para solicitar un cambio | Cuando deba cambiar una decisión gobernada |
+| **`SOURCE-BRIEF.*`** (raíz del proyecto) | Tu diseño original: visión, arquitectura, stack, restricciones, en tus propias palabras | Una vez, antes o durante la configuración |
+| **`cdad/CHANGE-REQUEST.md`** | La puerta de entrada para solicitar un cambio | Cuando deba cambiar una decisión gobernada o la línea de desarrollo |
 
-`cdad/context/stack.md` es el archivo que leerás con mayor frecuencia —el mapa de una pantalla de lo que es el sistema—, pero es un resultado y no un archivo que normalmente debas editar manualmente. Los cambios aprobados llegan mediante `CHANGE-REQUEST.md`.
+`SOURCE-BRIEF.*` permanece en la raíz del proyecto — el único artefacto de CDAD que es puramente tuyo para encontrar rápido, nunca maquinaria de gobernanza. `CHANGE-REQUEST.md` vive bajo `cdad/` junto con lo que gobierna, pero sigue siendo el único punto de entrada que usás constantemente; nunca se vuelve más difícil de alcanzar solo porque se movió.
+
+`cdad/context/stack.md` es el archivo que leerás con mayor frecuencia —el mapa de una pantalla de lo que es el sistema—, pero es un resultado y no un archivo que normalmente debas editar manualmente. Los cambios aprobados llegan mediante `cdad/CHANGE-REQUEST.md`.
 
 ---
 
@@ -267,12 +304,12 @@ Una fila de la tabla de stack sin un ADR en la columna **Locked by** es, por sí
 Existe una única puerta de entrada. No necesitas buscar qué archivo gobernado modificar.
 
 ```text
-CHANGE-REQUEST.md  ->  cdad/proposals/  ->  cdad/adr/ + cdad/context/stack.md
-      declaras intención       el agente propone       apruebas y aplicas
-      siempre escribible        escribible por agente   gobernado/protegido
+cdad/CHANGE-REQUEST.md  ->  cdad/proposals/  ->  cdad/adr/ + cdad/context/stack.md
+      declaras intención           el agente propone        apruebas y aplicas
+      siempre escribible           escribible por agente    gobernado/protegido
 ```
 
-Completa el bloque de solicitud en `CHANGE-REQUEST.md` en la raíz: qué debe cambiar, por qué, qué lo desencadenó, alcance, impacto, riesgo y prioridad.
+Completa el bloque de solicitud en `cdad/CHANGE-REQUEST.md`: qué debe cambiar, por qué, qué lo desencadenó, alcance, impacto, riesgo y prioridad.
 
 Después solicita al agente que procese la solicitud.
 
@@ -295,13 +332,13 @@ El trabajo rutinario de implementación no necesita entrar en este flujo. Si las
 
 ## Backlog
 
-`backlog.md`, en la raíz del proyecto, es la línea de desarrollo: Epics,
-Stories, y el trabajo que actualmente se espera construir. Responde "qué
-existe, qué sigue, qué está bloqueado" — es un artefacto de planificación,
-no arquitectura, y nunca una segunda fuente de verdad junto a `cdad/`.
+`cdad/backlog.md` es la línea de desarrollo: Epics, Stories, y el trabajo
+que actualmente se espera construir. Responde "qué existe, qué sigue, qué
+está bloqueado" — es un artefacto de planificación, no arquitectura, y
+nunca una segunda fuente de verdad junto a `cdad/context/`.
 
 ```text
-Contexto Gobernado / L0  ->  ADR  ->  backlog.md  ->  Implementación
+Contexto Gobernado / L0  ->  ADR  ->  cdad/backlog.md  ->  Implementación
 ```
 
 Una Story que contradice el contexto gobernado o un ADR aceptado es un
@@ -312,11 +349,11 @@ arquitectura.
 
 | Cambio | Vía |
 | --- | --- |
-| Epic o Story nueva/eliminada, o cambio material de alcance/criterios de aceptación | `CHANGE-REQUEST.md` → `cdad/proposals/` → decisión del Solution Designer |
+| Epic o Story nueva/eliminada, o cambio material de alcance/criterios de aceptación | `cdad/CHANGE-REQUEST.md` → `cdad/proposals/` → decisión del Solution Designer |
 | Actualización de estado de Story, *Current Focus*, *Next Work*, *Blocked* durante trabajo ya aprobado | Edición directa — implementación rutinaria, no una decisión gobernada |
 
 Antes de trabajar en desarrollo, el agente establece la Epic/Story
-aplicable desde `backlog.md`. Si hay Epics/Stories definidas en otro lugar
+aplicable desde `cdad/backlog.md`. Si hay Epics/Stories definidas en otro lugar
 pero ausentes del backlog, esa brecha se reconcilia mediante el proceso de
 cambio normal — el agente no las ignora silenciosamente, ni reescribe el
 backlog para que coincida sin más. Si no hay ninguna definida, el agente lo
@@ -369,14 +406,18 @@ El segundo principio se deriva de esto: **la capa determina tanto quién puede e
 ## Estructura
 
 ```text
-INDEX.md                        # mapa de todos los archivos — comienza aquí
 AGENTS.md                       # reglas centrales portables
-backlog.md                      # línea de desarrollo — Epics, Stories, foco actual
-CHANGE-REQUEST.md               # puerta de entrada para cambios
+README-CDAD.md                  # este archivo — configuración, compatibilidad
+README-CDAD.es.md               # espejo en español
 SOURCE-BRIEF.*                  # diseño original, preservado tras el bootstrap
 .gitignore                      # combinar con el del proyecto anfitrión
 │
-cdad/
+cdad/                           # gobernanza CDAD — todo lo de abajo se genera aquí, no en la raíz
+├── README.md                   # README operativo orientado al proyecto
+├── INDEX.md                    # mapa de todos los archivos — comienza aquí
+├── CHANGE-REQUEST.md           # puerta de entrada para cambios
+├── CDAD-COMPLETION.md          # registro durable de finalización del bootstrap
+├── backlog.md                  # línea de desarrollo — Epics, Stories, foco actual
 ├── proposals/                  # propuestas del agente pendientes de revisión
 ├── context/                    # L0 — contexto gobernado
 │   ├── stack.md                # mapa de arquitectura con siete vistas
@@ -418,7 +459,9 @@ cdad/
 
 `AGENTS.md` permanece en la raíz porque Kiro, Codex y Copilot lo leen por convención.
 
-`CHANGE-REQUEST.md` y `SOURCE-BRIEF.*` permanecen en la raíz por descubribilidad humana: son los dos archivos que el Solution Designer necesita localizar rápidamente.
+`README-CDAD.md`/`.es.md` permanecen en la raíz porque son los puntos de entrada humanos — lo primero que cualquiera que abra el proyecto debería poder encontrar, no algo enterrado bajo `cdad/`.
+
+`SOURCE-BRIEF.*` permanece en la raíz por la misma razón: es el diseño original del Solution Designer, en sus propias palabras, y debe ser tan descubrible como los READMEs. Todo lo demás que posee CDAD — incluyendo `CHANGE-REQUEST.md`, ahora que tiene uno — vive bajo `cdad/`; ver [Higiene del workspace](#higiene-del-workspace).
 
 ---
 
@@ -435,7 +478,7 @@ cdad/
 
 ## Primeros pasos
 
-1. Copia el núcleo portable — `INDEX.md`, `AGENTS.md`, `backlog.md`, `CHANGE-REQUEST.md`, `CDAD-COMPLETION.md`, `cdad/` (incluyendo `cdad/docs/` y `cdad/scripts/`) — en la raíz del proyecto, más únicamente el adaptador correspondiente a tu ADE: `.claude/` (incluyendo `.claude/CLAUDE.md`) para Claude Code, `.kiro/` para Kiro, `.github/copilot-instructions.md` para GitHub Copilot, o nada adicional para Codex. Ver [Adaptadores de ADE](#adaptadores-de-ade); no copies los demás adaptadores "por las dudas".
+1. Copia el núcleo portable — `AGENTS.md`, `README-CDAD.md`, `README-CDAD.es.md`, y `cdad/` completo (incluyendo `cdad/docs/`, `cdad/scripts/`, y `INDEX.md`/`CHANGE-REQUEST.md`/`CDAD-COMPLETION.md`/`backlog.md` ya dentro de él) — en la raíz del proyecto, más únicamente el adaptador correspondiente a tu ADE: `.claude/` (incluyendo `.claude/CLAUDE.md`) para Claude Code, `.kiro/` para Kiro, `.github/copilot-instructions.md` para GitHub Copilot, o nada adicional para Codex. Ver [Adaptadores de ADE](#adaptadores-de-ade); no copies los demás adaptadores "por las dudas".
 2. Combina el `.gitignore` de CDAD con el existente; no sobrescribas el archivo del proyecto.
 3. Ejecuta la skill `cdad-bootstrap` (por ejemplo, “bootstrap CDAD” o “set up CDAD”) en lugar de completar `cdad/context/` manualmente — realiza el paso 1 anterior por vos, de forma determinista.
 4. Si prefieres crear el contexto manualmente, comienza con `cdad/context/stack.md`. Deja una celda vacía en vez de adivinar; un dato desconocido explícito es mejor que una decisión inventada.
@@ -456,7 +499,7 @@ Si actualizas un proyecto creado antes de que existiera el modelo de dos regíme
 
 inmediatamente después de la actualización cuando `cdad/context/` ya contenga contenido real. Hasta que exista el marcador de freeze, ese contexto puede seguir siendo escribible por el agente.
 
-Mapa completo de archivos: [`INDEX.md`](INDEX.md) · Migración: [`cdad/docs/DOCS.md#migrating-from-cdad-v1`](cdad/docs/DOCS.md#migrating-from-cdad-v1)
+Mapa completo de archivos: [`cdad/INDEX.md`](cdad/INDEX.md) · Migración: [`cdad/docs/DOCS.md#migrating-from-cdad-v1`](cdad/docs/DOCS.md#migrating-from-cdad-v1)
 
 ---
 
@@ -512,9 +555,9 @@ infra/AGENTS.md
 ## Lo que mantienes
 
 - `cdad/context/` y `cdad/adr/`: se aplican mediante el proceso gobernado y, una vez congelados, no deben ser escritos directamente por un agente.
-- `backlog.md`: las Epics/Stories cambian vía `CHANGE-REQUEST.md` como una decisión arquitectónica; las actualizaciones de estado y foco durante implementación rutinaria son ediciones directas.
-- `CHANGE-REQUEST.md`: tu puerta de entrada cuando deba cambiar una decisión gobernada o la línea de desarrollo comprometida.
-- `SOURCE-BRIEF.*`: se escribe una vez durante el bootstrap y se conserva como fuente original.
+- `cdad/backlog.md`: las Epics/Stories cambian vía `cdad/CHANGE-REQUEST.md` como una decisión arquitectónica; las actualizaciones de estado y foco durante implementación rutinaria son ediciones directas.
+- `cdad/CHANGE-REQUEST.md`: tu puerta de entrada cuando deba cambiar una decisión gobernada o la línea de desarrollo comprometida.
+- `SOURCE-BRIEF.*`: se escribe una vez durante el bootstrap y se conserva como fuente original, en la raíz del proyecto.
 - Tu adaptador resuelto (`.claude/`, `.kiro/` o `.github/copilot-instructions.md`) y `cdad/scripts/`: activos de runtime/integración de CDAD que normalmente requieren pocos cambios, aparte de la configuración de rutas.
 
 ---

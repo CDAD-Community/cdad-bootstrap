@@ -27,12 +27,15 @@ The CDAD bootstrap contract is:
 ```text
 /
 ├── AGENTS.md
-├── backlog.md
-├── CDAD-COMPLETION.md
-├── CHANGE-REQUEST.md
-├── INDEX.md
+├── README-CDAD.md
+├── README-CDAD.es.md
+├── SOURCE-BRIEF.*                # if a source document existed
 └── cdad/
     ├── README.md
+    ├── INDEX.md
+    ├── CHANGE-REQUEST.md
+    ├── CDAD-COMPLETION.md
+    ├── backlog.md
     ├── adr/
     ├── context/
     ├── docs/
@@ -41,19 +44,23 @@ The CDAD bootstrap contract is:
 ```
 
 Tool-specific integration directories remain at their required locations.
+Workspace hygiene: the project root stays the user's — only ADE
+discovery/integration files, the two CDAD READMEs, `AGENTS.md`, and
+`SOURCE-BRIEF.*` belong there. Everything else CDAD owns lives under
+`cdad/`. See *Workspace hygiene* in `README-CDAD.md` for the full principle.
 
 ## Backlog governance
 
-`backlog.md`, at the project root, is the development line: Epics, Stories,
-and the work currently expected to be built. It is a development-planning
-artifact, not architecture — never a second source of truth beside `cdad/`.
+`cdad/backlog.md` is the development line: Epics, Stories, and the work
+currently expected to be built. It is a development-planning artifact, not
+architecture — never a second source of truth beside `cdad/context/`.
 
 **Precedence:** Governed Context / L0 → ADR → this backlog → implementation.
 A Story that contradicts governed context or an accepted ADR is a finding,
-not a resolution — surface it through `CHANGE-REQUEST.md`; never let a
+not a resolution — surface it through `cdad/CHANGE-REQUEST.md`; never let a
 Story silently override architecture.
 
-**What goes through `CHANGE-REQUEST.md` → `cdad/proposals/` → decision:**
+**What goes through `cdad/CHANGE-REQUEST.md` → `cdad/proposals/` → decision:**
 adding or removing an Epic or Story, or materially changing its scope or
 acceptance criteria — the same funnel as an architectural change.
 
@@ -65,7 +72,7 @@ remove Epics/Stories either — that distinction requires judgment, not a
 loophole.
 
 **Before development work, establish the applicable Epic/Story from
-`backlog.md`.** If defined Epics/Stories exist elsewhere (a requirements
+`cdad/backlog.md`.** If defined Epics/Stories exist elsewhere (a requirements
 doc, an issue tracker, prior conversation) but are missing from the
 backlog, reconcile them through the normal change process — do not
 silently ignore them and do not silently rewrite the backlog to match.
@@ -83,13 +90,16 @@ judgment call for the `cdad-audit` skill.
 
 ## Adapters vs. portable core
 
-CDAD ships a portable core (this file, `INDEX.md`, `backlog.md`,
-`CHANGE-REQUEST.md`, `CDAD-COMPLETION.md`, `cdad/`) plus one adapter per supported ADE: Claude
-Code → `.claude/`, Kiro → `.kiro/`, Codex → `AGENTS.md` alone, GitHub
-Copilot → `.github/copilot-instructions.md`. The CDAD Bootstrap source
-carries every adapter as a catalog; a target project receives the portable
-core plus exactly the one adapter matching the ADE that is executing the
-bootstrap — never the whole catalog, never more than one native adapter.
+CDAD ships a portable core — this file, `README-CDAD.md`, `README-CDAD.es.md`,
+and `SOURCE-BRIEF.*` (if a source document existed) at the project root, plus
+`cdad/` itself (carrying `INDEX.md`, `CHANGE-REQUEST.md`, `CDAD-COMPLETION.md`,
+`backlog.md`, `context/`, `adr/`, `proposals/`, `docs/`, `scripts/`) — plus
+one adapter per supported ADE: Claude Code → `.claude/`, Kiro → `.kiro/`,
+Codex → `AGENTS.md` alone, GitHub Copilot → `.github/copilot-instructions.md`.
+The CDAD Bootstrap source carries every adapter as a catalog; a target
+project receives the portable core plus exactly the one adapter matching the
+ADE that is executing the bootstrap — never the whole catalog, never more
+than one native adapter.
 
 Base the choice on the ADE actually executing the bootstrap, never on the
 underlying model (a Claude model is not Claude Code; a GPT model is not
@@ -135,11 +145,10 @@ Both confirmations matter.
 If a host project already contains:
 
 - `AGENTS.md`
-- `backlog.md`
-- `INDEX.md`
-- `CHANGE-REQUEST.md`
-- `CDAD-COMPLETION.md`
-- `cdad/`
+- `README-CDAD.md`
+- `README-CDAD.es.md`
+- `SOURCE-BRIEF.*`
+- `cdad/` (including `INDEX.md`, `CHANGE-REQUEST.md`, `CDAD-COMPLETION.md`, `backlog.md` inside it)
 - `.claude/`
 - `.kiro/`
 - `.github/copilot-instructions.md`
@@ -173,7 +182,7 @@ do not directly modify governed context.
 Architectural changes must go through:
 
 ```text
-CHANGE-REQUEST.md
+cdad/CHANGE-REQUEST.md
         ↓
 cdad/proposals/
         ↓
@@ -186,7 +195,7 @@ cdad/context/stack.md
 
 Routine implementation does not require a change request.
 
-Use `CHANGE-REQUEST.md` when a requested change affects a governed decision.
+Use `cdad/CHANGE-REQUEST.md` when a requested change affects a governed decision.
 
 A proposal should identify:
 
@@ -223,9 +232,9 @@ If the user wants the source design changed, treat that as an explicit design ch
 ## Completion report
 
 After bootstrap, report in chat **and** append this same report to
-`CDAD-COMPLETION.md` at the project root — that file is the durable record;
-chat output alone is lost once the session ends. Append, do not overwrite,
-on a later re-run (ADE/adapter switch, migration, re-freeze).
+`cdad/CDAD-COMPLETION.md` — that file is the durable record; chat output
+alone is lost once the session ends. Append, do not overwrite, on a later
+re-run (ADE/adapter switch, migration, re-freeze).
 
 ```text
 CDAD Bootstrap completed
@@ -285,8 +294,9 @@ Human action required:
 - Never install an adapter for an ADE other than the one executing the bootstrap.
 - Never infer the executing ADE from the underlying model or from adapter files that merely happen to exist; ask if it cannot be established with confidence.
 - Never invent Epics or Stories and present them as user-defined requirements.
-- Never let a Story in `backlog.md` silently override governed context or an accepted ADR.
-- Never add or remove an Epic/Story, or materially change one, outside the `CHANGE-REQUEST.md` flow.
+- Never let a Story in `cdad/backlog.md` silently override governed context or an accepted ADR.
+- Never add or remove an Epic/Story, or materially change one, outside the `cdad/CHANGE-REQUEST.md` flow.
+- Never generate `INDEX.md`, `CHANGE-REQUEST.md`, `CDAD-COMPLETION.md`, or `backlog.md` at the project root and move them into `cdad/` afterward — write them under `cdad/` directly.
 
 ### Bootstrap documentation vs. installed project layout
 
@@ -307,18 +317,27 @@ When an agent installs/bootstraps CDAD into a **host project**, it MUST organize
 ```text
 /
 ├── AGENTS.md
-├── backlog.md
-├── CDAD-COMPLETION.md
-├── CHANGE-REQUEST.md
-├── INDEX.md
+├── README-CDAD.md
+├── README-CDAD.es.md
+├── SOURCE-BRIEF.*                # if a source document existed
 └── cdad/
     ├── README.md
+    ├── INDEX.md
+    ├── CHANGE-REQUEST.md
+    ├── CDAD-COMPLETION.md
+    ├── backlog.md
     ├── adr/
     ├── context/
     ├── docs/
     ├── proposals/
     └── scripts/
 ```
+
+The project root belongs to the user's project; `cdad/` belongs to CDAD
+governance. Only ADE discovery/integration files, the two CDAD READMEs,
+`AGENTS.md`, and `SOURCE-BRIEF.*` earn a place at the root — every other
+CDAD-owned artifact is generated directly under `cdad/`, never written to
+the root and moved afterward.
 
 Install only the adapter matching the ADE executing the bootstrap (see *Adapters vs. portable core*). Whichever one it is, it remains at the host-project root, never moved under `cdad/`:
 
@@ -330,7 +349,12 @@ Install only the adapter matching the ADE executing the bootstrap (see *Adapters
 
 Codex takes no adapter file beyond `AGENTS.md` itself. Do not install the adapters for ADEs other than the one executing the bootstrap, even if the CDAD Bootstrap source contains them all.
 
-The bootstrap repository's `README-CDAD.md`, `INSTALLATION.md`, and `USAGE.md` are **source/reference documentation for the bootstrap package**. Do not copy those files into the host project's root.
+`README-CDAD.md` and `README-CDAD.es.md` ARE installed at the host-project
+root — they are the human-facing CDAD entry points and must stay
+discoverable there, not buried under `cdad/`. `INSTALLATION.md` and
+`USAGE.md` (and their `.es.md` pairs) are **source/reference documentation
+for the bootstrap package only** — do not copy those two into the host
+project.
 
 The **project-facing CDAD README MUST be installed as**:
 
@@ -348,9 +372,9 @@ The agent MUST:
 4. Detect the ADE executing the bootstrap and resolve exactly one adapter for it; if it cannot be established with confidence, ask rather than guess.
 5. Install the portable core plus only the resolved adapter, and explicitly exclude the others — the source repository is a catalog, not a package to install whole.
 6. Create/organize the CDAD scaffold under `cdad/` as defined above.
-7. Keep `AGENTS.md`, `backlog.md`, `CDAD-COMPLETION.md`, `CHANGE-REQUEST.md`, and `INDEX.md` at the host-project root.
-8. Install the project-facing README at `cdad/README.md`.
-9. Keep CDAD-owned `adr/`, `context/`, `docs/`, `proposals/`, and `scripts/` under `cdad/`.
+7. Keep `AGENTS.md`, `README-CDAD.md`, and `README-CDAD.es.md` at the host-project root.
+8. Write `INDEX.md`, `CHANGE-REQUEST.md`, `CDAD-COMPLETION.md`, and `backlog.md` directly under `cdad/` — never at the project root, and never generated at the root then moved.
+9. Install the project-facing README at `cdad/README.md`, and keep the other CDAD-owned `adr/`, `context/`, `docs/`, `proposals/`, and `scripts/` under `cdad/`.
 10. Preserve the original design/source brief (`SOURCE-BRIEF.*`) in the host project according to the CDAD bootstrap procedure.
 11. Never move, rename, duplicate, redistribute, or silently overwrite an existing host-project file.
 12. If a target file already exists, stop and report the conflict rather than silently replacing it.
