@@ -1,6 +1,6 @@
 ---
 name: cdad-audit
-description: Audit whether the governed context under cdad/context/ still matches the actual codebase. Use when the user asks to check context freshness, verify the docs are still accurate, review architectural drift, or run a CDAD audit — typically before a release, after a large merge, or when onboarding to an unfamiliar repo. The scheduled counterpart to the PostToolUse drift detector: same signals, same response path, full sweep instead of one file.
+description: Audit whether the governed context under cdad/context/ still matches the actual codebase, and whether backlog.md is reconciled with defined Epics/Stories. Use when the user asks to check context freshness, verify the docs are still accurate, review architectural drift, reconcile the backlog, or run a CDAD audit — typically before a release, after a large merge, or when onboarding to an unfamiliar repo. The scheduled counterpart to the PostToolUse drift detector: same signals, same response path, full sweep instead of one file.
 ---
 
 # Audit context freshness
@@ -56,6 +56,29 @@ for drift, regardless of whether it was found by a write-time warning, this
 sweep, or a direct question — that is what keeps drift from being defined
 twice and the two definitions ageing apart.
 
+## Backlog reconciliation
+
+`backlog.md` is not architecture, but it is still expected to stay honest.
+Run `cdad/scripts/cdad-check-backlog.sh` first for the deterministic part
+(duplicate Epic/Story IDs, invalid status values) — do not re-derive that by
+hand. Then check what only judgment can catch:
+
+| Check | How |
+|---|---|
+| Defined Story absent from backlog | Compare against requirements docs, issue trackers, or prior conversation the Solution Designer points you at |
+| Backlog Story with no corresponding defined requirement | Ask whether it is real or should be removed — do not delete it yourself |
+| Epic with no Stories | `cdad-check-backlog.sh` already warns; confirm whether that is temporary (freshly proposed) or stale |
+| Completed work not reflected in backlog | Compare recent commits/PRs against Story status; a merged feature with no `Done` Story is a finding |
+| Backlog references to obsolete artifacts | A Story naming a file, module, or decision that no longer exists |
+| Story contradicting governed context or an ADR | Same severity as architectural drift — see *Precedence* in `AGENTS.md` |
+
+Report findings; do not silently add, remove, or "fix" Epics/Stories
+yourself — a structural correction goes through `cdad-propose-change` (form
+4) like any other backlog change. Only routine status corrections you can
+justify from the evidence above (e.g. a Story is provably `Done`) may be
+applied directly, the same way any other routine implementation work would
+update backlog.md.
+
 ## Classification
 
 | Verdict | Meaning |
@@ -90,12 +113,20 @@ Unverifiable
 Confirmed
   <count> claims verified
 
+Backlog
+  cdad-check-backlog.sh: <OK / FAILED, summary>
+  Defined but missing from backlog: <list>
+  In backlog but no defined requirement: <list>
+  Stale / contradicts governed context: <list, with evidence>
+
 Recommended action
-  <per finding: update context, revert code, or open an ADR>
+  <per finding: update context, revert code, open an ADR, or process a
+  backlog change through cdad-propose-change>
 ```
 
 Report only. Do not edit `cdad/context/`, do not fix the drift in code, and do
 not soften a finding because the code looks reasonable. The Solution Designer
 decides whether the context or the implementation is the thing that is wrong.
 Divergences found by the drift-signals sweep are handed to `cdad-drift-response`
-to draft, not drafted here.
+to draft, not drafted here. Structural backlog findings are handed to
+`cdad-propose-change` (form 4), not resolved here either.

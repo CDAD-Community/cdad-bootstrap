@@ -2,13 +2,19 @@
 """CDAD - L0/L1 context protection (PreToolUse hook).
 
 permissions.deny already blocks the Write/Edit tools for the unconditional
-machinery paths. This hook covers two more things static config can't
-express: shell commands (sed -i, tee, redirection, mv) reaching the same
-files without going through a file tool, and the two-regime condition on
-cdad/context/ and cdad/adr/ - writable pre-freeze, denied once cdad/.frozen
-exists (ADR-008). A static permissions.deny entry can't test for a file's
-existence, so those two paths are deliberately absent from settings.json and
-live here instead.
+machinery paths. This hook covers what static config can't express: shell
+commands (sed -i, tee, redirection, mv, rm, ...) reaching those same
+machinery paths and the two protected root files without going through a
+file tool, and the two-regime condition on cdad/context/ and cdad/adr/ -
+writable pre-freeze, denied once cdad/.frozen exists. A static
+permissions.deny entry can't test for a file's existence, so those two
+paths are deliberately absent from settings.json and live here instead.
+
+Machinery (.claude/settings.json, .claude/hooks/) has no regime exception
+and no Write/Edit fallback here either: permissions.deny already blocks the
+tool path, so this hook's job for machinery is exclusively the shell path -
+an agent must never be able to disarm its own protection via sed/rm/tee/
+redirection just because that happens to route through Bash instead of Edit.
 
 Exit 2 plus permissionDecision:deny blocks the call deterministically.
 Any unexpected input exits 0 so a broken hook never blocks a session.
@@ -23,16 +29,19 @@ FROZEN_MARKER = "cdad/.frozen"
 
 REGIME_PATHS = re.compile(r"cdad/(context|adr)/")
 ROOT_FILES = re.compile(r"CHANGE-REQUEST\.md|SOURCE-BRIEF\.")
+MACHINERY = re.compile(r"\.claude/settings\.json|\.claude/hooks/")
 MUTATING_SHELL = re.compile(
     r"\b(sed\s+-i|tee|mv|cp|rm|truncate|dd|install)\b"
-    r"|>>?\s*\S*(cdad/|CHANGE-REQUEST\.md|SOURCE-BRIEF\.)"
+    r"|>>?\s*\S*(cdad/|CHANGE-REQUEST\.md|SOURCE-BRIEF\."
+    r"|\.claude/settings\.json|\.claude/hooks/)"
 )
 
 REASON = (
-    "CDAD governance: cdad/context/, cdad/adr/, CHANGE-REQUEST.md, and "
-    "SOURCE-BRIEF.* are owned by the Solution Designer. Write your draft to "
-    "cdad/proposals/ instead - that directory is yours. Use the "
-    "cdad-propose-change or cdad-bootstrap skill."
+    "CDAD governance: cdad/context/, cdad/adr/, CHANGE-REQUEST.md, "
+    "SOURCE-BRIEF.*, and the .claude/ governance machinery itself are owned "
+    "by the Solution Designer. Write your draft to cdad/proposals/ instead - "
+    "that directory is yours. Use the cdad-propose-change or cdad-bootstrap "
+    "skill."
 )
 
 
@@ -41,6 +50,8 @@ def is_frozen() -> bool:
 
 
 def is_protected(target: str) -> bool:
+    if MACHINERY.search(target):
+        return True
     # cdad/proposals/ is the one directory an agent may always write to -
     # SOURCE-BRIEF.* and CHANGE-REQUEST.md are only protected outside it
     # (e.g. cdad-bootstrap staging cdad/proposals/bootstrap/SOURCE-BRIEF.md).

@@ -11,13 +11,14 @@ context. If you read one file to orient yourself, read this one.
 |---|---|
 | Populate CDAD for the first time in this project | drop your solution doc at the project root, any name (optional), then run the `cdad-bootstrap` skill |
 | Ratify a freshly-bootstrapped context so it becomes read-only | `cdad/scripts/cdad-freeze.sh` |
-| Change the stack, architecture, or any directive | `CHANGE-REQUEST.md`, at the project root |
+| Change the stack, architecture, any directive, or an Epic/Story | `CHANGE-REQUEST.md`, at the project root |
+| See the development line — Epics, Stories, current focus | `backlog.md`, at the project root |
 | Check whether an L3 change (infra, a manifest) contradicts ratified architecture | `.claude/skills/cdad-drift-response/SKILL.md`, or wait for the `CDAD DRIFT SIGNAL` warning |
 | See what this system is, in one screen | `cdad/context/stack.md` |
 | Understand why CDAD works this way | `cdad/docs/DOCS.md` (Methodology) |
 | Set this up in my project | `README.md` |
-| Run it on Kiro or Codex | `cdad/docs/DOCS.md` (Portability) |
-| Delete the adapters I don't use | `README.md` → *Delete what you don't use* |
+| Run it on Kiro, Codex, or Copilot | `cdad/docs/DOCS.md` (Portability) |
+| See which adapter I get for my ADE | `.claude/skills/cdad-bootstrap/SKILL.md` (step 0) or `README.md` → *ADE adapters* |
 
 ---
 
@@ -40,6 +41,16 @@ exception: `cdad-bootstrap` writes them directly. See `cdad/.frozen` under
 | `cdad/adr/ADR-*.md` | L1 | Accepted decisions and their rationale | on demand |
 | `cdad/adr/ADR-TEMPLATE.md` | L1 | Blank ADR | never |
 
+## Development line — governed like architecture, but not L0
+
+`backlog.md` (project root) is Epics, Stories, current focus, and next
+work. Structural changes (new/removed Epic or Story, material scope or
+acceptance-criteria change) go through `CHANGE-REQUEST.md` like an
+architectural decision. Story status and focus updates during
+already-approved implementation are direct edits — see *Backlog governance*
+in `AGENTS.md`. Precedence: L0 → ADR → `backlog.md` → implementation; a
+Story never overrides governed context.
+
 ## Staging — agents write here
 
 | File | Contains | Loads |
@@ -48,23 +59,30 @@ exception: `cdad-bootstrap` writes them directly. See `cdad/.frozen` under
 
 ## Instructions — how agents behave
 
+A project has exactly one adapter, matching the ADE that executed its
+bootstrap — see `.claude/skills/cdad-bootstrap/SKILL.md` (step 0). The rows
+below marked *(Claude Code adapter)* or *(Kiro adapter)* are mutually
+exclusive with each other in an installed project; both are shown here
+because this source repository is the catalog, not an installed project.
+
 | File | Contains | Loads |
 |---|---|---|
-| `AGENTS.md` | Portable core rules. Read natively by Kiro and Codex | **always** |
-| `.claude/CLAUDE.md` | Imports `AGENTS.md`, adds skill routing | **always** |
-| `.claude/rules/implementation.md` | Rules for `src/`, `tests/`, `lib/` | on matching files |
-| `.claude/rules/infrastructure.md` | Rules for `infra/`, `deploy/`, CI | on matching files |
-| `.kiro/steering/cdad-implementation.md` | Kiro mirror of the above | on matching files |
-| `.kiro/steering/cdad-infrastructure.md` | Kiro mirror of the above | on matching files |
+| `AGENTS.md` | Portable core rules. Read natively by Kiro, Codex, and Copilot | **always** |
+| `.claude/CLAUDE.md` *(Claude Code adapter)* | Imports `AGENTS.md`, adds skill routing | **always** |
+| `.claude/rules/implementation.md` *(Claude Code adapter)* | Rules for `src/`, `tests/`, `lib/` | on matching files |
+| `.claude/rules/infrastructure.md` *(Claude Code adapter)* | Rules for `infra/`, `deploy/`, CI | on matching files |
+| `.kiro/steering/cdad-implementation.md` *(Kiro adapter)* | Kiro mirror of the above | on matching files |
+| `.kiro/steering/cdad-infrastructure.md` *(Kiro adapter)* | Kiro mirror of the above | on matching files |
+| `.github/copilot-instructions.md` *(Copilot adapter)* | Points Copilot at `AGENTS.md` and `cdad/` as the canonical source; no duplicated methodology | repository-wide, per GitHub Copilot |
 
 ## Procedures — load only when invoked
 
 | File | Invoked when |
 |---|---|
 | `.claude/skills/cdad-bootstrap/SKILL.md` | first time populating `cdad/context/`, pre-freeze, right after cloning the kit |
-| `.claude/skills/cdad-propose-change/SKILL.md` | processing a change request, or a change is needed |
-| `.claude/skills/cdad-adr/SKILL.md` | a change was approved and needs recording |
-| `.claude/skills/cdad-audit/SKILL.md` | checking whether context still matches the code — also the scheduled sweep counterpart to the drift detector below |
+| `.claude/skills/cdad-propose-change/SKILL.md` | processing a change request — architecture, context, conflict, or a development-line (Epic/Story) change |
+| `.claude/skills/cdad-adr/SKILL.md` | a change was approved and needs recording (architecture/context changes only — a backlog-only change does not get an ADR) |
+| `.claude/skills/cdad-audit/SKILL.md` | checking whether context still matches the code, or whether `backlog.md` is reconciled with defined Epics/Stories — also the scheduled sweep counterpart to the drift detector below |
 | `.claude/skills/cdad-drift-response/SKILL.md` | a `CDAD DRIFT SIGNAL` fired, `cdad-audit` found a divergence, or you're asking whether an L3 change contradicts ratified architecture |
 
 ## Enforcement — costs zero context
@@ -79,6 +97,8 @@ exception: `cdad-bootstrap` writes them directly. See `cdad/.frozen` under
 | `.kiro/permissions.yaml` | Kiro's declarative equivalent of the machinery-path deny (1.0+) |
 | `.kiro/hooks/detect-drift.json` | Kiro mirror of `detect-drift.py` — same script, different trigger wiring |
 | `cdad/scripts/cdad-check-stack.sh` | CI gate: an ADR without a map update fails the build; also checks referential integrity of ADR citations and warns if the drift-signals block is missing |
+| `cdad/scripts/cdad-check-adapter.sh` | Deterministic validation of the ADE-adapter matrix: given a target ADE, asserts the installed files match exactly what that ADE should have and nothing else |
+| `cdad/scripts/cdad-check-backlog.sh` | CI gate: fails on duplicate Epic/Story IDs or a status value outside the agreed vocabulary in `backlog.md`; warns on an Epic with no Stories yet |
 
 ## Human documentation — never loaded by any agent
 
@@ -107,7 +127,7 @@ skip.
 
 Only these. Everything else is on demand or never.
 
-- `.claude/CLAUDE.md` (or `AGENTS.md` on Kiro and Codex)
+- `.claude/CLAUDE.md` (or `AGENTS.md` on Kiro, Codex, and Copilot)
 - `AGENTS.md`
 - `cdad/context/constraints.md`
 

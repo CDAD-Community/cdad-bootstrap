@@ -11,11 +11,16 @@ Use these skills instead of improvising the format:
 | Architectural or context change needed | `cdad-propose-change` |
 | A change was approved and needs recording | `cdad-adr` |
 | Verify the governed context still matches the code | `cdad-audit` |
+| `backlog.md` needs an Epic/Story added, removed, or materially changed | `cdad-propose-change` (form 4) |
+| Reconcile `backlog.md` against defined Epics/Stories | `cdad-audit` |
 
 `cdad/context/`, `cdad/adr/`, `CHANGE-REQUEST.md`, and `SOURCE-BRIEF.*` are
 blocked at the permission layer and by a PreToolUse hook. A denial there is
 the system working as designed — write to `cdad/proposals/` instead, and
-never look for another way to reach a blocked path.
+never look for another way to reach a blocked path. `backlog.md` is not
+blocked the same way — routine Story status/focus updates are direct edits;
+only structural changes go through the flow above (see `AGENTS.md` →
+*Backlog governance*).
 
 Hard constraints, always in context:
 

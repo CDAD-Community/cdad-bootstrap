@@ -92,7 +92,7 @@ debe fallar cuando el mapa arquitectónico y las decisiones gobernadas dejan de 
 
 ## El mapa arquitectónico
 
-`cdad/context/stack.md` proporciona seis vistas:
+`cdad/context/stack.md` proporciona siete vistas:
 
 1. stack
 2. componentes
@@ -100,10 +100,31 @@ debe fallar cuando el mapa arquitectónico y las decisiones gobernadas dejan de 
 4. observabilidad
 5. reglas de dependencias
 6. historial de cambios del mapa
+7. señales de drift — rutas fuera de `cdad/` que cargan peso arquitectónico, vigiladas por `detect-drift.py`
 
 Utiliza este mapa como primer punto de orientación arquitectónica.
 
 Si una entrada del stack no tiene un ADR en `Locked by`, debe investigarse como una decisión no gobernada.
+
+---
+
+## El backlog
+
+`backlog.md` es la línea de desarrollo: Epics, Stories, foco actual y
+próximo trabajo. Es un artefacto de planificación, no arquitectura — la
+precedencia es contexto gobernado → ADR → backlog → implementación, y una
+Story nunca sobrescribe una decisión arquitectónica.
+
+Antes de trabajar en desarrollo, establecé la Epic/Story aplicable desde el
+backlog. Agregar, eliminar, o cambiar materialmente una va por
+`CHANGE-REQUEST.md`, igual que un cambio de arquitectura. Actualizar el
+estado de una Story o las listas de Current Focus / Next Work / Blocked
+durante trabajo ya aprobado es una edición directa, no una solicitud de
+cambio.
+
+Corré `cdad/scripts/cdad-check-backlog.sh` para la integridad estructural
+(IDs únicos, valores de estado válidos); corré `cdad-audit` para reconciliar
+el backlog contra lo que realmente está definido y realmente se hizo.
 
 ---
 
@@ -217,13 +238,14 @@ No conviertas cada instrucción en una regla permanentemente cargada.
 
 ## Adaptadores por herramienta
 
-CDAD proporciona adaptadores para los ADE soportados.
+CDAD proporciona un adaptador por cada ADE soportado. Un proyecto instala
+exactamente el que corresponde al ADE que ejecutó su bootstrap — nunca más
+de uno — resuelto automáticamente, no elegido copiando archivos después.
 
 - Claude Code utiliza `.claude/`.
 - Kiro utiliza `.kiro/`.
-- Codex utiliza `AGENTS.md` y la configuración aplicable.
-
-Conserva solamente los adaptadores que utilizas.
+- Codex utiliza `AGENTS.md` y la configuración aplicable, sin archivo adicional.
+- GitHub Copilot utiliza `.github/copilot-instructions.md` más `AGENTS.md`.
 
 **Nunca elimines `AGENTS.md`.**
 
@@ -267,6 +289,7 @@ Cuando un agente despliega CDAD dentro de un proyecto anfitrión, DEBE reorganiz
 ```text
 /
 ├── AGENTS.md
+├── backlog.md
 ├── CDAD-COMPLETION.md
 ├── CHANGE-REQUEST.md
 ├── INDEX.md
@@ -279,7 +302,7 @@ Cuando un agente despliega CDAD dentro de un proyecto anfitrión, DEBE reorganiz
     └── scripts/
 ```
 
-Para Claude Code y/o Kiro, `.claude/` y `.kiro/` permanecen en la raíz del proyecto anfitrión.
+El único adaptador resuelto — `.claude/`, `.kiro/`, o `.github/copilot-instructions.md` — permanece en la raíz del proyecto anfitrión. Solo ese se instala.
 
 No copies `README-CDAD.md`, `INSTALLATION.md` ni `USAGE.md` del repositorio Bootstrap a la raíz del proyecto anfitrión. El README orientado al proyecto instalado debe quedar en `cdad/README.md`.
 

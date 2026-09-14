@@ -21,7 +21,7 @@ En ambos casos, el objetivo final es el mismo: establecer el contrato del worksp
 - Git.
 - Bash para el CI gate y los scripts.
 - Python 3 para el hook de protección.
-- Claude Code, Kiro, Codex u otro ADE capaz de seguir el procedimiento de bootstrap.
+- Claude Code, Kiro, Codex, GitHub Copilot u otro ADE capaz de seguir el procedimiento de bootstrap.
 - Se recomienda un documento de diseño/origen terminado, aunque no es obligatorio.
 
 El documento de diseño puede estar en Markdown, texto, Word, PDF u otro formato habitual.
@@ -41,6 +41,7 @@ Identifica:
 - `CHANGE-REQUEST.md` existente
 - `.claude/` existente
 - `.kiro/` existente
+- `.github/copilot-instructions.md` existente
 - `.gitignore` existente
 - documentos de diseño/origen
 - archivos o directorios cuyos nombres sean requeridos por CDAD
@@ -56,6 +57,7 @@ El workspace final debe contener:
 ```text
 /
 ├── AGENTS.md
+├── backlog.md
 ├── CDAD-COMPLETION.md
 ├── CHANGE-REQUEST.md
 ├── INDEX.md
@@ -68,7 +70,7 @@ El workspace final debe contener:
     └── scripts/
 ```
 
-Los directorios de integración del ADE, como `.claude/` y `.kiro/`, permanecen en la raíz.
+Instala únicamente el adaptador correspondiente al ADE que realmente usás — `.claude/` para Claude Code, `.kiro/` para Kiro, o `.github/copilot-instructions.md` para GitHub Copilot (Codex no necesita ningún archivo adicional). No copies los demás "por las dudas"; el repositorio fuente distribuye todos los adaptadores como catálogo, no como paquete para instalar completo. Ver la matriz de adaptadores de ADE en el README.
 
 ### 3. Preservar el diseño original
 
@@ -173,30 +175,36 @@ El agente debe tratar este repositorio como un contrato documental ejecutable, n
 
 1. Leer `README-CDAD.md`.
 2. Leer `AGENTS.md`.
-3. Inspeccionar el proyecto anfitrión.
-4. Identificar el documento de diseño/origen.
-5. Si no existe, trabajar mediante conversación.
-6. Si existen varios candidatos, preguntar.
-7. Nunca adivinar cuál es la fuente autorizada.
-8. Nunca sobrescribir silenciosamente un archivo existente con el mismo nombre.
-9. Crear el contrato de workspace CDAD.
-10. Mapear la fuente confirmada al contexto gobernado.
-11. Solicitar confirmación del contexto generado.
-12. Preservar la fuente como `SOURCE-BRIEF.*`.
-13. Ejecutar freeze solo después de confirmación humana explícita.
-14. Verificar la protección.
-15. Informar el estado final.
+3. Detectar qué ADE está ejecutando realmente este bootstrap y resolver exactamente un adaptador para él. Si parece haber más de un ADE posible y no se puede establecer con confianza cuál lo ejecuta, detenerse y preguntar — nunca adivinar, ni instalar más de un adaptador nativo.
+4. Inspeccionar el proyecto anfitrión.
+5. Identificar el documento de diseño/origen.
+6. Si no existe, trabajar mediante conversación.
+7. Si existen varios candidatos, preguntar.
+8. Nunca adivinar cuál es la fuente autorizada.
+9. Nunca sobrescribir silenciosamente un archivo existente con el mismo nombre.
+10. Crear el contrato de workspace CDAD: el núcleo portable más únicamente el adaptador resuelto, excluyendo explícitamente los demás.
+11. Mapear la fuente confirmada al contexto gobernado.
+12. Buscar Epics/Stories definidas (documento de requisitos, issue tracker, o conversación previa). Si existen, reconciliarlas en `backlog.md`; si no existe ninguna, decirlo explícitamente en vez de inventarlas.
+13. Solicitar confirmación del contexto generado.
+14. Preservar la fuente como `SOURCE-BRIEF.*`.
+15. Ejecutar freeze solo después de confirmación humana explícita.
+16. Verificar la protección.
+17. Informar el estado final.
 
 ### Informe obligatorio del agente
 
 Debe informar:
 
+- ADE detectado y adaptador resuelto
+- adaptadores excluidos explícitamente
+- si existe soporte nativo para ese ADE
 - archivos creados
 - archivos preservados
 - conflictos encontrados
 - archivos omitidos deliberadamente
 - documento fuente utilizado
 - si el contexto fue confirmado
+- si `backlog.md` está definido y reconciliado con las Epics/Stories conocidas
 - si se ejecutó freeze
 - si se verificó la protección
 - si se conectó el CI gate
@@ -207,12 +215,15 @@ Debe informar:
 ## Checklist
 
 - [ ] Proyecto anfitrión inspeccionado.
+- [ ] ADE ejecutor detectado y exactamente un adaptador resuelto (preguntado, no adivinado, si era ambiguo).
+- [ ] Solo se instaló el adaptador resuelto; los demás quedaron explícitamente excluidos.
 - [ ] Archivos requeridos identificados.
 - [ ] Protegidos los archivos existentes contra sobrescritura silenciosa.
 - [ ] Scaffolding CDAD creado.
 - [ ] `SOURCE-BRIEF.*` preservado cuando corresponde.
 - [ ] `.gitignore` combinado.
 - [ ] Contexto poblado.
+- [ ] `backlog.md` presente; Epics/Stories conocidas reconciliadas o explícitamente ausentes.
 - [ ] Revisión humana completada.
 - [ ] Contexto confirmado explícitamente.
 - [ ] `cdad/.frozen` creado.
@@ -235,6 +246,7 @@ Cuando un agente despliega CDAD dentro de un proyecto anfitrión, DEBE reorganiz
 ```text
 /
 ├── AGENTS.md
+├── backlog.md
 ├── CDAD-COMPLETION.md
 ├── CHANGE-REQUEST.md
 ├── INDEX.md
@@ -247,7 +259,7 @@ Cuando un agente despliega CDAD dentro de un proyecto anfitrión, DEBE reorganiz
     └── scripts/
 ```
 
-Para Claude Code y/o Kiro, `.claude/` y `.kiro/` permanecen en la raíz del proyecto anfitrión.
+El único adaptador resuelto — `.claude/` (Claude Code), `.kiro/` (Kiro), o `.github/copilot-instructions.md` (GitHub Copilot) — permanece en la raíz del proyecto anfitrión. Solo ese se instala, nunca más de uno.
 
 No copies `README-CDAD.md`, `INSTALLATION.md` ni `USAGE.md` del repositorio Bootstrap a la raíz del proyecto anfitrión. El README orientado al proyecto instalado debe quedar en `cdad/README.md`.
 

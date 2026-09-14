@@ -92,7 +92,7 @@ must fail when the governed architecture and its map become inconsistent.
 
 ## The architecture map
 
-`cdad/context/stack.md` provides six views:
+`cdad/context/stack.md` provides seven views:
 
 1. stack
 2. components
@@ -100,10 +100,30 @@ must fail when the governed architecture and its map become inconsistent.
 4. observability
 5. dependency rules
 6. map change log
+7. drift signals — paths outside `cdad/` that carry architectural weight, watched by `detect-drift.py`
 
 Use the map as the first architectural orientation point.
 
 If a stack entry has no ADR in its `Locked by` field, investigate it as an ungoverned decision.
+
+---
+
+## The backlog
+
+`backlog.md` is the development line: Epics, Stories, current focus, and
+next work. It is a planning artifact, not architecture — precedence is
+governed context → ADR → backlog → implementation, and a Story never
+overrides an architectural decision.
+
+Before development work, establish the applicable Epic/Story from the
+backlog. Adding, removing, or materially changing one goes through
+`CHANGE-REQUEST.md`, same as an architecture change. Updating a Story's
+status or the Current Focus / Next Work / Blocked lists during
+already-approved work is a direct edit, not a change request.
+
+Run `cdad/scripts/cdad-check-backlog.sh` for structural integrity (unique
+IDs, valid status values); run `cdad-audit` to reconcile the backlog against
+what is actually defined and actually done.
 
 ---
 
@@ -219,13 +239,14 @@ Do not turn every instruction into a permanently loaded rule.
 
 ## Tool-specific adapters
 
-CDAD provides adapters for supported ADEs.
+CDAD provides one adapter per supported ADE. A project installs exactly the
+one matching the ADE that executed its bootstrap — never more than one —
+resolved automatically, not chosen by copying files around afterward.
 
 - Claude Code uses `.claude/`.
 - Kiro uses `.kiro/`.
-- Codex uses `AGENTS.md` and applicable configuration.
-
-Keep only the adapters you use.
+- Codex uses `AGENTS.md` and applicable configuration, no extra adapter file.
+- GitHub Copilot uses `.github/copilot-instructions.md` plus `AGENTS.md`.
 
 **Never remove `AGENTS.md`.**
 
@@ -236,13 +257,15 @@ Keep only the adapters you use.
 Before implementation:
 
 - [ ] Read applicable governed context.
+- [ ] Establish the applicable Epic/Story from `backlog.md`, if one exists.
 - [ ] Determine whether the task is routine or architectural.
-- [ ] If architectural, create/process a change request.
+- [ ] If architectural, or a new/changed Epic/Story, create/process a change request.
 
 During implementation:
 
 - [ ] Keep implementation aligned with governed context.
 - [ ] Do not silently modify governed decisions.
+- [ ] Update the Story's status and Current Focus as work actually progresses.
 - [ ] Preserve host-project structure.
 
 Before merge:
@@ -269,6 +292,7 @@ When an agent deploys CDAD into a host project, it MUST reorganize the installed
 ```text
 /
 ├── AGENTS.md
+├── backlog.md
 ├── CDAD-COMPLETION.md
 ├── CHANGE-REQUEST.md
 ├── INDEX.md
@@ -281,7 +305,7 @@ When an agent deploys CDAD into a host project, it MUST reorganize the installed
     └── scripts/
 ```
 
-For Claude Code and/or Kiro, `.claude/` and `.kiro/` remain at the host-project root.
+Whichever single adapter was resolved — `.claude/`, `.kiro/`, or `.github/copilot-instructions.md` — remains at the host-project root. Only that one is installed.
 
 Do not copy the bootstrap repository's `README-CDAD.md`, `INSTALLATION.md`, or `USAGE.md` into the host-project root. The installed, project-facing CDAD README belongs at `cdad/README.md`.
 

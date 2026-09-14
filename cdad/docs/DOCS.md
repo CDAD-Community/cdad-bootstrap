@@ -9,7 +9,7 @@ None of it loads automatically in any tool, so merging costs nothing and saves
 a file.
 
 - [Methodology](#methodology) — the model itself: layers, enforcement planes, the change flow
-- [Portability: Claude Code, Kiro, Codex](#portability-claude-code-kiro-codex) — what each tool enforces and how to adapt
+- [Portability: Claude Code, Kiro, Codex, Copilot](#portability-claude-code-kiro-codex-copilot) — what each tool enforces and how to adapt
 - [Migrating from CDAD v1](#migrating-from-cdad-v1) — file mapping and upgrade steps
 
 ---
@@ -124,7 +124,7 @@ redefine architecture without explicit approval from the Solution Designer.
 
 `cdad/context/`, `cdad/adr/`, and `SOURCE-BRIEF.*` are not protected
 unconditionally — they are protected only once something has actually been
-ratified. Enforcement (ADR-008) is split into two regimes, discriminated by
+ratified. Enforcement is split into two regimes, discriminated by
 the marker file `cdad/.frozen`:
 
 | Regime | Condition | Those paths |
@@ -182,8 +182,8 @@ which one is wrong; the agent is not permitted to assume the code is right.
 The control plane above protects paths, L3 is free by design, and a change
 there can contradict a ratified decision without touching any denied path —
 editing `docker-compose.yml` can silently override a datastore decision locked
-in `stack.md`. ADR-009 extends the control plane from paths to decisions
-without making L3 governed territory.
+in `stack.md`. Drift detection extends the control plane from paths to
+decisions without making L3 governed territory.
 
 **One engine, two triggers.** A `cdad-drift-signals` block declared inside
 `cdad/context/stack.md` (L0, human-edited only) names the paths outside the
@@ -204,6 +204,68 @@ yet to contradict. Shell mutations of L3 are not detected by the hook (its
 `tool_input` is a command string, not a path); the CI gate is the net for
 that case, same as it is for the regime-conditional write block above.
 
+### Backlog governance
+
+`backlog.md`, at the project root, is the development line: Epics, Stories,
+current focus, and next work. It is a development-planning artifact, not
+architecture, and it must never become a second source of truth beside
+`cdad/`.
+
+**Precedence:**
+
+```
+Governed Context / L0
+        v
+ADR / governed decisions
+        v
+backlog.md
+        v
+Implementation work
+```
+
+A Story that contradicts governed context or an accepted ADR is a finding,
+not a resolution. It is surfaced through the normal change process, the same
+way architectural drift is — a Story never silently overrides architecture.
+
+**Two kinds of backlog change, two very different bars:**
+
+| Change | Governed how |
+|---|---|
+| New/removed Epic or Story, or a material scope/acceptance-criteria change | `CHANGE-REQUEST.md` → `cdad/proposals/` → Solution Designer decision (`cdad-propose-change`, form 4) |
+| Story status, *Current Focus*, *Next Work*, *Blocked* updates during already-approved implementation | Direct edit — routine implementation, not a governed decision |
+
+This mirrors the routine-implementation carve-out CDAD already applies to
+architecture ("routine implementation does not require a change request") —
+extended to development-line tracking instead of invented as a separate
+rule. The distinction between "material" and "routine" requires judgment a
+hook cannot make deterministically, so — deliberately, unlike `cdad/context/`
+and `cdad/adr/` — `backlog.md` is **not** in `permissions.deny` or blocked by
+`protect-l0.py`. Its protection is instruction-plane (`AGENTS.md`, the
+`cdad-propose-change` and `cdad-audit` skills) plus one deterministic
+backstop: `cdad/scripts/cdad-check-backlog.sh` fails the build on duplicate
+Epic/Story IDs or a status value outside the agreed vocabulary, and warns on
+an Epic with no Stories yet. What it cannot check — whether an Epic/Story is
+real, current, and actually reflects the work being done, or whether a
+structural change actually went through `CHANGE-REQUEST.md` — is the
+`cdad-audit` *Backlog reconciliation* pass's job, not the script's.
+
+**Reconciling existing Epics/Stories.** When Epics or Stories are already
+defined somewhere (a requirements doc, an issue tracker, prior conversation)
+but not yet reflected in `backlog.md`, that is a gap to close through
+`cdad-propose-change`, not something to silently ignore or silently rewrite
+the backlog to match. When none are defined at all, say so explicitly and
+ask whether the development line should be defined — never invent business
+Epics/Stories and present them as user-defined requirements; a proposed one
+stays labeled `Status: Proposed` until accepted.
+
+**Why not just another ADR-governed file?** An ADR records a decision that,
+once made, rarely changes shape again. A Story is expected to move through
+statuses constantly as normal work happens — routing every status flip
+through `CHANGE-REQUEST.md` would make the backlog too expensive to keep
+current, and a stale backlog is worse than no backlog (same failure mode as
+stale context). The bar is calibrated to what actually needs a human
+decision: *what* the project commits to building, not *how far along* it is.
+
 ### Operational boundary
 
 CDAD does not slow implementation down. It prevents accidental architectural
@@ -215,31 +277,38 @@ broadly — narrow them rather than working around them.
 
 ---
 
-## Portability: Claude Code, Kiro, Codex
+## Portability: Claude Code, Kiro, Codex, Copilot
 
 CDAD v2 separates **content** from **mechanism**. The governed context under
 `cdad/` is plain markdown and is fully portable. What differs per tool is how
 that content is loaded and how the L0 protection is enforced.
 
 Nothing in `cdad/` needs to change to move between tools. Only the adapter does.
+A project installs exactly one adapter, resolved at bootstrap time from the
+ADE actually executing it — see the ADE adapter matrix in `README.md` and in
+`.claude/skills/cdad-bootstrap/SKILL.md` (step 0).
 
 ### Compatibility matrix
 
-| Capability | Claude Code | Kiro | Codex |
-|---|---|---|---|
-| Always-loaded instructions | `.claude/CLAUDE.md` | `AGENTS.md`, or steering `inclusion: always` | `AGENTS.md` |
-| Reads `AGENTS.md` natively | no — imports it | yes | yes |
-| Path-scoped rules | `.claude/rules/` + `paths:` | `.kiro/steering/` + `inclusion: fileMatch` | nested `AGENTS.md` only |
-| On-demand procedures | Skills | steering `inclusion: manual` / `auto` | prompt or custom command |
-| Declarative file-write blocking | `permissions.deny` | not equivalent | `[permissions.*.filesystem]` globs |
-| Programmatic pre-tool block | PreToolUse hook | agent hooks (different model) | hooks / sandbox |
-| Governed context in `cdad/` | works | works | works |
-| CI gate (`cdad/scripts/`) | works | works | works |
+| Capability | Claude Code | Kiro | Codex | GitHub Copilot |
+|---|---|---|---|---|
+| Always-loaded instructions | `.claude/CLAUDE.md` | `AGENTS.md`, or steering `inclusion: always` | `AGENTS.md` | `AGENTS.md` + `.github/copilot-instructions.md` |
+| Reads `AGENTS.md` natively | no — imports it | yes | yes | yes |
+| Path-scoped rules | `.claude/rules/` + `paths:` | `.kiro/steering/` + `inclusion: fileMatch` | nested `AGENTS.md` only | none documented |
+| On-demand procedures | Skills | steering `inclusion: manual` / `auto` | prompt or custom command | prompt |
+| Declarative file-write blocking | `permissions.deny` | not equivalent | `[permissions.*.filesystem]` globs | not equivalent |
+| Programmatic pre-tool block | PreToolUse hook | agent hooks (different model) | hooks / sandbox | none documented |
+| Governed context in `cdad/` | works | works | works | works |
+| CI gate (`cdad/scripts/`) | works | works | works | works |
 
 **Short version:** Claude Code runs everything. Kiro runs everything except the
 deterministic write block, which it approximates. Codex runs the content and the
 write block, but loses conditional loading — its instruction file is
-all-or-nothing.
+all-or-nothing. GitHub Copilot is the thinnest adapter: content and the CI
+gate work, with neither conditional loading nor a deterministic write block —
+CDAD does not claim Copilot capabilities beyond what current GitHub
+documentation actually supports (`.github/copilot-instructions.md` for
+repository-wide instructions, `AGENTS.md` for agent instructions).
 
 ### Claude Code
 
@@ -314,22 +383,51 @@ Combine with `sandbox_mode` and `writable_roots` for a harder boundary. Verify
 against the current Codex config reference — this surface has been changing
 quickly.
 
-### If you use all three
+### GitHub Copilot
+
+Copilot reads two files per current GitHub documentation: repository-wide
+instructions from `.github/copilot-instructions.md`, and agent instructions
+from `AGENTS.md`. The portable core loads through `AGENTS.md` with no other
+adapter machinery beyond that single pointer file.
+
+**Conditional loading does not exist.** `.github/copilot-instructions.md` is
+repository-wide only — there is no documented path-scoped equivalent to
+`paths:` or `inclusion: fileMatch`.
+
+**Write protection** has no declarative or programmatic equivalent in the
+Copilot adapter today. `cdad/scripts/cdad-check-stack.sh` plus a required
+review on `cdad/**` is the only backstop, the same fallback Kiro uses for the
+two regime-conditional paths.
+
+The adapter file itself must stay thin: it points at `AGENTS.md` and `cdad/`
+as the canonical source rather than restating CDAD methodology, so there is
+never a second copy of the rules to drift out of sync with the first.
+
+### If your team uses more than one ADE
+
+Bootstrap itself always resolves to exactly one adapter per run — see the ADE
+adapter matrix. If a team deliberately wants more than one adapter present at
+once (some engineers on Claude Code, others on Copilot), add the extra
+adapter by hand; bootstrap will not do this for you, and re-running it will
+not add a second native adapter on its own either.
 
 Keep `AGENTS.md` as the single source for the core rules. Never restate a rule
-in `.claude/CLAUDE.md` that already lives in `AGENTS.md` — that duplication is
-exactly the defect v2 was built to remove.
+in `.claude/CLAUDE.md` or `.github/copilot-instructions.md` that already lives
+in `AGENTS.md` — that duplication is exactly the defect v2 was built to
+remove.
 
-The two path-scoped rule files are the one place duplication is unavoidable,
+The path-scoped rule files are the one place duplication is unavoidable,
 since `.claude/rules/` and `.kiro/steering/` use incompatible front matter. They
 are short and change rarely.
 
 ### If you use only one
 
-Prune the adapters you do not use. See *Delete what you don't use* in the
-README for the exact commands and the two caveats: deleting `.claude/` removes
-the deterministic enforcement layer, and Codex needs nested `AGENTS.md` files to
-approximate path-scoped rules.
+Bootstrap already installs only the adapter matching the ADE that executed
+it — there is nothing to prune. If the project moves to a different ADE
+later, see *Switching ADE later* in the README for the exact commands and
+the caveats: deleting `.claude/` removes the deterministic enforcement
+layer, and Codex/Copilot need nested `AGENTS.md` files to approximate
+path-scoped rules.
 
 `AGENTS.md` is never deleted — it is the core every tool reads.
 

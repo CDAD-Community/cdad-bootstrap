@@ -1,6 +1,6 @@
 ---
 name: cdad-propose-change
-description: Produce a CDAD change proposal instead of applying a change directly. Use when the user says to process the change request, when an architectural change is required, when a governed context file under cdad/context/ is wrong or outdated, or when implementation code conflicts with the governed context. Triggers on any request to change architecture, paradigm, module boundaries, frameworks, cloud services, or infrastructure tooling, and whenever a permission denial points at cdad/context/, cdad/adr/, or CHANGE-REQUEST.md.
+description: Produce a CDAD change proposal instead of applying a change directly. Use when the user says to process the change request, when an architectural change is required, when a governed context file under cdad/context/ is wrong or outdated, when implementation code conflicts with the governed context, or when backlog.md needs an Epic/Story added, removed, or materially changed. Triggers on any request to change architecture, paradigm, module boundaries, frameworks, cloud services, or infrastructure tooling, on any request to change the committed development line, and whenever a permission denial points at cdad/context/, cdad/adr/, or CHANGE-REQUEST.md.
 ---
 
 # CDAD change proposal
@@ -37,6 +37,13 @@ Read what the change actually touches: `cdad/context/stack.md` always, plus the
 relevant context files and any ADR the affected stack rows point to in their
 "Locked by" column. A proposal that ignores the decision it overturns is not a
 proposal.
+
+If the request is about the development line instead — a new Epic/Story, or
+a material change to one's scope or acceptance criteria — read `backlog.md`
+first, and check whether it contradicts governed context or an accepted
+ADR before drafting (see backlog *Precedence* in `AGENTS.md`). Routine Story
+status updates during already-approved work are not a change request at
+all; redirect those back to direct editing, not a proposal.
 
 ## Forms
 
@@ -97,6 +104,31 @@ Possible resolutions:
 Status: Requires human review
 ```
 
+## 4. Development-line change
+
+Use when `backlog.md` needs an Epic or Story added, removed, or materially
+changed in scope or acceptance criteria. Not for routine status updates
+during already-approved work — those are direct edits, not a proposal.
+
+```text
+Proposed Backlog Change
+
+Kind: <new Epic / new Story / remove / material scope change>
+Epic/Story ID: <EPIC-NNN / STORY-NNN, or "new" if not yet assigned>
+Current state: <what backlog.md says today, or "none" if new>
+Suggested change:
+Reason:
+Contradicts governed context or an ADR?: <no / yes — cite file:line>
+Impact:
+Risk:
+
+Status: Requires Solution Designer approval
+```
+
+If the request would contradict governed context or an accepted ADR, say so
+explicitly rather than quietly aligning the Story to the architecture — that
+contradiction is exactly what the Solution Designer needs to see and decide.
+
 ## Quality bar
 
 A proposal is only useful if it can be decided without a follow-up question.
@@ -112,4 +144,8 @@ A proposal is only useful if it can be decided without a follow-up question.
 State the file path you wrote and summarize the proposal in two or three lines
 in chat, so the decision can be made without opening the file. Then stop.
 
-Once approved, the decision is recorded with the `cdad-adr` skill.
+Once an architecture, context, or conflict proposal (forms 1-3) is approved,
+the decision is recorded with the `cdad-adr` skill. A development-line
+proposal (form 4) is not an architectural decision — once approved, the
+Solution Designer applies it directly to `backlog.md`; it does not get an
+ADR unless it also happens to touch governed context.

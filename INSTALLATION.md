@@ -21,7 +21,7 @@ In both modes, the final objective is the same: establish the CDAD workspace con
 - Git.
 - Bash for the CI gate and shell scripts.
 - Python 3 for the protection hook.
-- Claude Code, Kiro, Codex, or another ADE capable of following the CDAD bootstrap procedure.
+- Claude Code, Kiro, Codex, GitHub Copilot, or another ADE capable of following the CDAD bootstrap procedure.
 - A completed design/source document is recommended but not mandatory.
 
 The design document may be Markdown, text, Word, PDF, or another common format.
@@ -41,6 +41,7 @@ Identify:
 - existing `CHANGE-REQUEST.md`
 - existing `.claude/`
 - existing `.kiro/`
+- existing `.github/copilot-instructions.md`
 - existing `.gitignore`
 - source/design documents
 - files or directories with names that CDAD requires
@@ -56,6 +57,7 @@ The resulting workspace must contain:
 ```text
 /
 ├── AGENTS.md
+├── backlog.md
 ├── CDAD-COMPLETION.md
 ├── CHANGE-REQUEST.md
 ├── INDEX.md
@@ -68,7 +70,7 @@ The resulting workspace must contain:
     └── scripts/
 ```
 
-ADE-specific integration directories such as `.claude/` and `.kiro/` remain at the project root.
+Install only the ADE-specific adapter matching the ADE you actually use — `.claude/` for Claude Code, `.kiro/` for Kiro, or `.github/copilot-instructions.md` for GitHub Copilot (Codex takes no extra adapter file). Do not copy the others "just in case"; the source repository ships every adapter as a catalog, not as a package to install whole. See the ADE adapter matrix in the README.
 
 ### 3. Preserve the source design
 
@@ -179,30 +181,36 @@ An agent should treat this repository as an executable documentation contract, n
 
 1. Read `README-CDAD.md`.
 2. Read `AGENTS.md`.
-3. Inspect the host project.
-4. Identify the host project's design/source document.
-5. If there is no document, proceed through conversation.
-6. If there are multiple candidates, ask the user.
-7. Never guess which source document is authoritative.
-8. Never overwrite an existing same-name file silently.
-9. Create the CDAD workspace contract.
-10. Map the confirmed source into the governed context.
-11. Ask the user to confirm the generated context.
-12. Preserve the source as `SOURCE-BRIEF.*`.
-13. Freeze only after explicit human confirmation.
-14. Verify protection.
-15. Report the final state.
+3. Detect the ADE actually executing this bootstrap and resolve exactly one adapter for it. If more than one ADE looks possible and the executing one can't be established with confidence, stop and ask — never guess, and never install more than one native adapter.
+4. Inspect the host project.
+5. Identify the host project's design/source document.
+6. If there is no document, proceed through conversation.
+7. If there are multiple candidates, ask the user.
+8. Never guess which source document is authoritative.
+9. Never overwrite an existing same-name file silently.
+10. Create the CDAD workspace contract: the portable core plus only the resolved adapter, explicitly excluding the others.
+11. Map the confirmed source into the governed context.
+12. Check for defined Epics/Stories (a requirements doc, issue tracker, or prior conversation). If found, reconcile them into `backlog.md`; if none exist, say so explicitly rather than inventing them.
+13. Ask the user to confirm the generated context.
+14. Preserve the source as `SOURCE-BRIEF.*`.
+15. Freeze only after explicit human confirmation.
+16. Verify protection.
+17. Report the final state.
 
 ### Required agent report
 
 After installation, the agent should report:
 
+- detected ADE and resolved adapter
+- adapters explicitly excluded
+- whether native adapter support exists for this ADE
 - files created
 - files preserved
 - conflicts found
 - files intentionally skipped
 - source document used
 - whether context was confirmed
+- whether `backlog.md` is defined and reconciled with any known Epics/Stories
 - whether freeze was executed
 - whether protection was verified
 - whether CI gate was connected
@@ -239,12 +247,15 @@ Run this after verifying that `cdad/context/` contains real context and no templ
 ## Installation checklist
 
 - [ ] Host project inspected.
+- [ ] Executing ADE detected and exactly one adapter resolved (asked, not guessed, if ambiguous).
+- [ ] Only the resolved adapter installed; the others explicitly excluded.
 - [ ] Required CDAD files identified.
 - [ ] Existing files protected from silent overwrite.
 - [ ] CDAD scaffolding created.
 - [ ] `SOURCE-BRIEF.*` preserved when applicable.
 - [ ] `.gitignore` merged.
 - [ ] Context populated.
+- [ ] `backlog.md` present; known Epics/Stories reconciled or explicitly absent.
 - [ ] Human review completed.
 - [ ] Context explicitly confirmed.
 - [ ] `cdad/.frozen` created.
@@ -267,6 +278,7 @@ When an agent deploys CDAD into a host project, it MUST reorganize the installed
 ```text
 /
 ├── AGENTS.md
+├── backlog.md
 ├── CDAD-COMPLETION.md
 ├── CHANGE-REQUEST.md
 ├── INDEX.md
@@ -279,7 +291,7 @@ When an agent deploys CDAD into a host project, it MUST reorganize the installed
     └── scripts/
 ```
 
-For Claude Code and/or Kiro, `.claude/` and `.kiro/` remain at the host-project root.
+Whichever single adapter was resolved — `.claude/` (Claude Code), `.kiro/` (Kiro), or `.github/copilot-instructions.md` (GitHub Copilot) — remains at the host-project root. Only that one is installed, never more than one.
 
 Do not copy the bootstrap repository's `README-CDAD.md`, `INSTALLATION.md`, or `USAGE.md` into the host-project root. The installed, project-facing CDAD README belongs at `cdad/README.md`.
 

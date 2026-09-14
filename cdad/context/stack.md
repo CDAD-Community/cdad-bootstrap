@@ -178,5 +178,21 @@ happened without a row, the governance loop was skipped.
 | | | |
 
 ---
+
+## 7. Drift signals
+
+Paths outside `cdad/` that carry architectural weight even though they are not
+themselves governed. `detect-drift.py` and the `cdad-audit` sweep read this
+block to know what to watch; without it, the detector is blind. One line per
+signal: a glob, then the decision or view it guards.
+
+```cdad-drift-signals
+# <glob>  ->  <what it guards, referencing a view above or an ADR>
+```
+
+Leave the block empty (as above) rather than inventing paths that do not
+carry a real decision yet. A signal with no matching decision above is noise.
+
+---
 Governance: L0. Read-only for AI agents. Changes require an approved ADR and are
 applied by the Solution Designer.

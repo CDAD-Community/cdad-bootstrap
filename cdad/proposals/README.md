@@ -10,10 +10,15 @@ artifact without ever touching `cdad/context/` or `cdad/adr/`.
 
 ```
 CHANGE-REQUEST.md   →   cdad/proposals/   →   cdad/adr/ + cdad/context/
-(project root)
+(project root)                                or backlog.md (dev-line changes)
    you write intent     agent drafts          you apply, after approval
-   (always writable)    (agent writable)      (blocked for agents)
+   (always writable)    (agent writable)
 ```
+
+A development-line proposal (new/removed Epic or Story, or a material scope
+change — `cdad-propose-change` form 4) is applied to `backlog.md`, not
+`cdad/adr/`, unless it also happens to touch governed context. Routine Story
+status updates never pass through here at all — they're direct edits.
 
 ## Lifecycle
 
