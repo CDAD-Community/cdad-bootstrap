@@ -189,7 +189,9 @@ Architectural changes must go through:
 ```text
 cdad/CHANGE-REQUEST.md
         ↓
-cdad/proposals/
+cdad/proposals/               (proposal, then ADR draft + promotion script)
+        ↓
+Human Promotion Boundary      (review, then explicit human execution)
         ↓
 cdad/adr/
         ↓
@@ -213,6 +215,59 @@ A proposal should identify:
 - risk
 - alternatives
 - affected map rows
+
+## Human Promotion Boundary
+
+Preparing a governed change and promoting it are different acts. The agent
+does the first; only the human does the second.
+
+```text
+PROPOSAL
+    ↓
+PROMOTION PACKAGE      (ADR draft + affected context files + apply-*.sh)
+    ↓
+HUMAN REVIEW
+    ↓
+EXPLICIT HUMAN EXECUTION
+    ↓
+GOVERNED CHANGE
+```
+
+> **AI may prepare the change. AI may not autonomously promote the change.**
+
+Once a proposal (forms 1-3 of `cdad-propose-change`, or a `cdad-drift-response`
+full/fast track) is approved, the agent's job is not to edit `cdad/adr/` or
+`cdad/context/` — those stay write-protected regardless. Instead it stages a
+**promotion package** entirely under `cdad/proposals/`: the ADR draft, the
+full text of every affected `cdad/context/` file, and an executable script —
+`apply-ADR-NNN-<slug>.sh` — that applies all of them together.
+
+The script is a first-class CDAD artifact, not a convenience wrapper:
+
+- lives in `cdad/proposals/`, the one directory the agent may always write to;
+- opens with a header naming the proposal and ADR and stating that human
+  execution is required;
+- lets the human view the ADR text and the exact diff against current context
+  before deciding, and asks for an explicit confirmation before writing
+  anything — not a single blind `[yes/no]`;
+- applies every file the approved change touches in one run, and stops with a
+  clear error rather than continuing after a partial failure;
+- is never executed by the agent, under any circumstance — the human runs it
+  from the project root: `bash cdad/proposals/apply-ADR-NNN-<slug>.sh`.
+
+After generating it, the agent must plainly tell the user: that a promotion
+script was generated and exactly where it is, what it will change, that they
+must review the proposal, ADR, and script before running it, the one-line
+command to run it, that execution is their decision, and that the agent has
+not promoted the change automatically. Generating a proposal, an ADR draft, or
+a promotion script is never itself approval — each governed promotion needs
+its own explicit human decision, and approving one change does not carry over
+to the next.
+
+For changes that do not touch governed context — a development-line change
+applied straight to `cdad/backlog.md` (see *Backlog governance*) — this
+boundary does not apply; that stays a direct edit after approval, no ADR and
+no script.
 
 ## Protected context
 
@@ -294,6 +349,10 @@ Human action required:
 - Never silently move CDAD artifacts.
 - Never claim a decision was approved when it was not.
 - Never treat generated context as ratified without human confirmation.
+- Never execute a generated promotion script, or apply its changes by any
+  other means, on the agent's own initiative — see *Human Promotion Boundary*.
+- Never treat a drafted proposal, ADR, or promotion script as approval for the
+  next one; each governed promotion requires its own explicit human decision.
 - Never delete `AGENTS.md`.
 - Never bypass governed protection after freeze.
 - Never install an adapter for an ADE other than the one executing the bootstrap.

@@ -1,6 +1,6 @@
 ---
 name: cdad-drift-response
-description: Use when a CDAD DRIFT SIGNAL is emitted, when cdad-audit reports a divergence, or when the user asks whether a change under src/, infra/, or a dependency manifest contradicts ratified architecture. Produces a proposal under cdad/proposals/ and emits the commands the human runs to ratify it.
+description: Use when a CDAD DRIFT SIGNAL is emitted, when cdad-audit reports a divergence, or when the user asks whether a change under src/, infra/, or a dependency manifest contradicts ratified architecture. Produces a proposal under cdad/proposals/ plus a promotion script the human runs to ratify it.
 ---
 
 # CDAD drift response
@@ -47,19 +47,29 @@ alternatives considered with why each loses, consequences, risks.
 
 Status line: `Status: Requires Architect approval`. Only the human accepts.
 
-## Step 3 — Emit, never execute
+## Step 3 — Stage the promotion package, never execute it
 
-End with a block the human can paste. Do not run it.
+If the proposal is accepted (or once you know it will need to be — ask if
+unclear), stage the same promotion package the `cdad-adr` skill produces,
+using the same shape it defines:
 
-    cp cdad/proposals/PROPOSAL-<slug>.md cdad/adr/ADR-NNN-<slug>.md
-    # then edit the stack.md change log by hand, using the row above
-    bash cdad/scripts/cdad-check-stack.sh
+- `cdad/proposals/ADR-DRAFT-<slug>.md` — the ADR, following
+  `cdad/adr/ADR-TEMPLATE.md` for the full track, or the fast-track minimum
+  delta promoted into the same template shape
+- `cdad/proposals/context-<basename>.md` for every affected file (`stack.md`
+  at minimum, changelog row included)
+- `cdad/proposals/apply-ADR-NNN-<slug>.sh` — the executable promotion script,
+  with the required header, the `view`/`yes`/`no` review loop, one `mv`/`cp`
+  per staged file, and a final `bash cdad/scripts/cdad-check-stack.sh`
 
 State the ADR number as a suggestion — the next free one — and say it is the
-human's to confirm.
+human's to confirm. Then deliver the same "🟡 Change ready for review" message
+`cdad-adr` uses: where the script is, what it will change, that review comes
+first, the exact command to run it, and that you have not promoted anything.
 
 ## Hard rule
 
-You draft and emit. The human promotes. Running the promotion yourself would
-make you the ratifier of your own assertion, which is the exact failure CDAD
-exists to prevent.
+You draft and stage. The human promotes by running the script themselves.
+Running the promotion yourself — or applying its changes by any other means —
+would make you the ratifier of your own assertion, which is the exact failure
+CDAD exists to prevent.

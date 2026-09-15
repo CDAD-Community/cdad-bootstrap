@@ -26,6 +26,7 @@ Compatible con Claude Code, Kiro, Codex y GitHub Copilot · CC BY 4.0
 - [Los dos archivos que siempre tocarás](#los-dos-archivos-que-siempre-tocarás)
 - [El mapa](#el-mapa)
 - [Cambiar algo](#cambiar-algo)
+- [Límite Humano de Promoción](#límite-humano-de-promoción)
 - [Backlog](#backlog)
 - [Mantener el mapa honesto](#mantener-el-mapa-honesto)
 - [Principio de diseño](#principio-de-diseño)
@@ -317,9 +318,9 @@ Una fila de la tabla de stack sin un ADR en la columna **Locked by** es, por sí
 Existe una única puerta de entrada. No necesitas buscar qué archivo gobernado modificar.
 
 ```text
-cdad/CHANGE-REQUEST.md  ->  cdad/proposals/  ->  cdad/adr/ + cdad/context/stack.md
-      declaras intención           el agente propone        apruebas y aplicas
-      siempre escribible           escribible por agente    gobernado/protegido
+cdad/CHANGE-REQUEST.md  ->  cdad/proposals/  ->  revisas y ejecutas un script  ->  cdad/adr/ + cdad/context/stack.md
+      declaras intención           el agente propone      el Límite Humano de Promoción     gobernado/protegido
+      siempre escribible           escribible por agente
 ```
 
 Completa el bloque de solicitud en `cdad/CHANGE-REQUEST.md`: qué debe cambiar, por qué, qué lo desencadenó, alcance, impacto, riesgo y prioridad.
@@ -335,11 +336,44 @@ El agente devuelve una propuesta completa con:
 - alternativas
 - filas exactas del mapa que cambian
 
-Tú apruebas la propuesta. El agente prepara el ADR. El cambio aprobado se aplica mediante el proceso gobernado.
+Tú apruebas la propuesta. El agente entonces prepara un **paquete de promoción** en `cdad/proposals/`: el borrador del ADR, el texto completo de cada archivo afectado bajo `cdad/context/`, y un script ejecutable:
+
+```bash
+bash cdad/proposals/apply-ADR-NNN-<slug>.sh
+```
+
+Revisa la propuesta, el ADR y el script, y ejecuta tú mismo ese único comando desde la raíz del proyecto. El script te deja `view` (ver) el texto del ADR y el diff exacto contra el contexto actual, y solo aplica todos los archivos afectados juntos cuando respondés `yes`; nunca lo ejecuta el agente — ver [Límite Humano de Promoción](#límite-humano-de-promoción).
 
 **`cdad/proposals/` es el único directorio bajo `cdad/` donde el agente puede escribir como parte del flujo de cambios gobernados.**
 
 El trabajo rutinario de implementación no necesita entrar en este flujo. Si las tareas normales requieren solicitudes de cambio repetidamente, probablemente las restricciones están escritas de forma demasiado amplia.
+
+---
+
+## Límite Humano de Promoción
+
+Preparar un cambio gobernado y promoverlo son actos distintos, y CDAD los
+mantiene así:
+
+```text
+PROPUESTA -> PAQUETE DE PROMOCIÓN -> REVISIÓN HUMANA -> EJECUCIÓN HUMANA EXPLÍCITA -> CAMBIO GOBERNADO
+```
+
+> **La IA puede preparar el cambio. La IA no puede promover el cambio de forma autónoma.**
+
+El agente puede analizar el impacto, redactar la propuesta, redactar el ADR,
+preparar los archivos afectados bajo `cdad/context/`, y generar el script de
+promoción. No puede ejecutar ese script, editar `cdad/adr/` o `cdad/context/`
+directamente, ni tratar una propuesta, un ADR o un script redactados como una
+aprobación — cada promoción gobernada necesita su propia decisión humana
+explícita, y aprobar un cambio nunca se traslada al siguiente.
+
+El script de promoción es en sí mismo un artefacto CDAD, no un envoltorio de
+conveniencia. Vive en `cdad/proposals/`, nombra en su cabecera la propuesta y
+el ADR a los que pertenece, pide una confirmación final antes de escribir
+nada, aplica todos los archivos que el cambio toca en una sola ejecución, y
+falla con claridad en lugar de dejar el mapa a medio actualizar. Regla
+completa: `AGENTS.md` → *Human Promotion Boundary*.
 
 ---
 
@@ -594,6 +628,8 @@ CDAD es una metodología en evolución centrada en la gobernanza del contexto en
 > **El contexto es la Fuente de Verdad.**
 
 Relacionado: [CDAD Framework](https://github.com/mgriott/context-driven-ai-development) — metodología, whitepapers, principios y modelo de gobernanza.
+
+Comunidad: [CDAD Community (ES)](https://cdad-community.github.io/es/) · [cdad-docs](https://github.com/CDAD-Community/cdad-docs)
 
 ---
 

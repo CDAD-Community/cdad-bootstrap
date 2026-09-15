@@ -62,19 +62,31 @@ La aprobación es una decisión de gobernanza, no un detalle de implementación.
 
 ### 6. Registrar la decisión
 
-El cambio aprobado se convierte en un ADR bajo:
+El cambio aprobado se convierte en un **paquete de promoción**, preparado bajo:
 
 ```text
-cdad/adr/
+cdad/proposals/
 ```
 
-El mapa:
+— el borrador del ADR, el texto completo de cada archivo afectado bajo
+`cdad/context/` (incluyendo el `cdad/context/stack.md` actualizado), y un
+script ejecutable:
 
 ```text
-cdad/context/stack.md
+cdad/proposals/apply-ADR-NNN-<slug>.sh
 ```
 
-debe reflejar la decisión aceptada.
+El agente nunca lo ejecuta. Revisa el paquete y ejecútalo tú mismo desde la
+raíz del proyecto:
+
+```bash
+bash cdad/proposals/apply-ADR-NNN-<slug>.sh
+```
+
+Pide una confirmación final, aplica todos los archivos afectados juntos, y
+falla con claridad en lugar de dejar el mapa a medio actualizar. Solo esta
+ejecución humana explícita escribe realmente en `cdad/adr/` y
+`cdad/context/stack.md` — ver el Límite Humano de Promoción en `AGENTS.md`.
 
 ### 7. Verificar
 

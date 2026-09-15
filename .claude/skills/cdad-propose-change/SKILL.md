@@ -145,7 +145,11 @@ State the file path you wrote and summarize the proposal in two or three lines
 in chat, so the decision can be made without opening the file. Then stop.
 
 Once an architecture, context, or conflict proposal (forms 1-3) is approved,
-the decision is recorded with the `cdad-adr` skill. A development-line
+the decision is recorded with the `cdad-adr` skill, which stages the ADR, the
+affected context files, and an executable promotion script together — the
+Solution Designer reviews and runs it; the agent never applies the change
+itself (the Human Promotion Boundary, `AGENTS.md`). A development-line
 proposal (form 4) is not an architectural decision — once approved, the
-Solution Designer applies it directly to `cdad/backlog.md`; it does not get an
-ADR unless it also happens to touch governed context.
+Solution Designer applies it directly to `cdad/backlog.md`, no script
+involved; it does not get an ADR unless it also happens to touch governed
+context.

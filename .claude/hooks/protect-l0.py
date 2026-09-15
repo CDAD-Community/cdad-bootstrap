@@ -42,6 +42,15 @@ MUTATING_SHELL = re.compile(
     r"|>>?\s*\S*(cdad/|CHANGE-REQUEST\.md|SOURCE-BRIEF\."
     r"|\.claude/settings\.json|\.claude/hooks/)"
 )
+# An agent may always write drafts into cdad/proposals/ (see is_protected),
+# but it must never be the one to execute the promotion script it staged
+# there - that is the Human Promotion Boundary (AGENTS.md). Kept as its own
+# pattern, checked ahead of the cdad/proposals/ exemption in is_protected(),
+# so that exemption keeps allowing every other mutating command inside
+# cdad/proposals/ (mv/rm/cp cleanup of stale drafts).
+PROMOTION_SCRIPT_EXEC = re.compile(
+    r"\b(?:bash|sh|\.)\s+\S*cdad/proposals/apply-[A-Za-z0-9._-]+\.sh\b"
+)
 
 REASON = (
     "CDAD governance: cdad/context/, cdad/adr/, cdad/CHANGE-REQUEST.md, "
@@ -58,6 +67,8 @@ def is_frozen() -> bool:
 
 def is_protected(target: str) -> bool:
     if MACHINERY.search(target):
+        return True
+    if PROMOTION_SCRIPT_EXEC.search(target):
         return True
     # cdad/proposals/ is the one directory an agent may always write to -
     # SOURCE-BRIEF.* and CHANGE-REQUEST.md are only protected outside it
@@ -83,8 +94,9 @@ def main() -> int:
         target = tool_input.get("file_path") or tool_input.get("notebook_path") or ""
     elif tool == "Bash":
         command = tool_input.get("command", "")
-        # Only flag commands that could mutate. Reads stay allowed.
-        if MUTATING_SHELL.search(command):
+        # Only flag commands that could mutate, or that execute a staged
+        # promotion script. Reads stay allowed.
+        if MUTATING_SHELL.search(command) or PROMOTION_SCRIPT_EXEC.search(command):
             target = command
 
     if target and is_protected(target):

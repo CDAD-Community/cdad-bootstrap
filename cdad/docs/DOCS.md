@@ -92,9 +92,9 @@ therefore has exactly one entry point for change, and it is a plain markdown
 file that is always in the same place.
 
 ```
-cdad/CHANGE-REQUEST.md  ->  cdad/proposals/  ->  cdad/adr/ + cdad/context/
-     Designer states          agent drafts         Designer applies
-     intent, 4 lines          a full proposal      after approval
+cdad/CHANGE-REQUEST.md  ->  cdad/proposals/  ->  Designer reviews + runs script  ->  cdad/adr/ + cdad/context/
+     Designer states          agent drafts a           bash apply-ADR-NNN-*.sh            applied
+     intent, 4 lines          promotion package
 ```
 
 The asymmetry is the mechanism: `cdad/proposals/` is the only directory under
@@ -104,9 +104,19 @@ where it edits the architecture and no path where it silently skips review,
 because the alternative is blocked at the permission layer rather than
 discouraged in prose.
 
+The last step is the **Human Promotion Boundary**: the agent's draft, however
+complete, is not the change. It becomes one only when the Designer reads the
+generated `apply-ADR-NNN-<slug>.sh` and runs it themselves. The agent may
+prepare a governed change — analyze it, draft the proposal, draft the ADR,
+draft the affected context files, generate the script; it may never promote
+one by running that script, editing `cdad/adr/` or `cdad/context/` directly,
+or treating its own draft as approval. See `AGENTS.md` → *Human Promotion
+Boundary*.
+
 This also removes the friction that kills governance models in practice. The
-Designer does not need to remember which of six files to edit, or how to format
-an ADR. They write four lines in one known location.
+Designer does not need to remember which of six files to edit, how to format
+an ADR, or reconstruct a sequence of commands by hand. They write four lines
+in one known location, then review and run one script.
 
 ### Governance model
 
@@ -115,10 +125,13 @@ boundaries, integration strategy, deployment strategy, data model, frameworks,
 runtimes, cloud platform and managed services, and any change to L0.
 
 **Agents may:** read and analyze context, detect inconsistencies, propose
-changes, and generate implementation aligned with the governed context.
+changes, draft ADRs and their promotion scripts, and generate implementation
+aligned with the governed context.
 
 **The golden rule:** an agent may suggest, analyze, and accelerate. It may not
-redefine architecture without explicit approval from the Solution Designer.
+redefine architecture without explicit approval from the Solution Designer,
+and it may not execute a promotion script even after that approval — the
+Solution Designer runs it. See *Human Promotion Boundary* in `AGENTS.md`.
 
 ### Two regimes
 

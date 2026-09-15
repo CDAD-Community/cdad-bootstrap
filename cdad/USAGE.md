@@ -62,19 +62,30 @@ Approval is a governance decision, not an implementation detail.
 
 ### 6. Record the decision
 
-The approved change becomes an ADR under:
+The approved change becomes a **promotion package**, staged under:
 
 ```text
-cdad/adr/
+cdad/proposals/
 ```
 
-The architecture map under:
+— the ADR draft, the full text of every affected file under `cdad/context/`
+(including the updated `cdad/context/stack.md`), and an executable script:
 
 ```text
-cdad/context/stack.md
+cdad/proposals/apply-ADR-NNN-<slug>.sh
 ```
 
-must reflect the accepted decision.
+The agent never runs it. Review the package, then run it yourself from the
+project root:
+
+```bash
+bash cdad/proposals/apply-ADR-NNN-<slug>.sh
+```
+
+It asks for a final confirmation, applies every affected file together, and
+fails clearly rather than leaving the map half-updated. Only this explicit
+human execution actually writes to `cdad/adr/` and `cdad/context/stack.md` —
+see the Human Promotion Boundary in `AGENTS.md`.
 
 ### 7. Verify
 

@@ -24,6 +24,7 @@ Works with Claude Code, Kiro, Copilot and Codex · CC BY 4.0
 - [The two files you will always touch](#the-two-files-you-will-always-touch)
 - [The map](#the-map)
 - [Changing something](#changing-something)
+- [Human Promotion Boundary](#human-promotion-boundary)
 - [Backlog](#backlog)
 - [Keeping the map honest](#keeping-the-map-honest)
 - [Design principle](#design-principle)
@@ -313,9 +314,9 @@ A stack-table row without an ADR in its **Locked by** column is itself a finding
 There is one entry point. You do not hunt for the right governed file.
 
 ```text
-cdad/CHANGE-REQUEST.md  ->  cdad/proposals/  ->  cdad/adr/ + cdad/context/stack.md
-      you state intent          agent drafts           you approve and apply
-      always writable           agent writable         governed/protected
+cdad/CHANGE-REQUEST.md  ->  cdad/proposals/  ->  you review + run one script  ->  cdad/adr/ + cdad/context/stack.md
+      you state intent          agent drafts           the Human Promotion Boundary       governed/protected
+      always writable           agent writable
 ```
 
 Fill in the request block in `cdad/CHANGE-REQUEST.md` with what needs to change, why, trigger, scope, impact, risk, and priority.
@@ -331,11 +332,44 @@ The agent returns a complete proposal covering:
 - alternatives
 - exact stack-map rows that change
 
-You approve the proposal. The agent drafts the ADR. The approved change is then applied through the governed process.
+You approve the proposal. The agent then stages a **promotion package** in `cdad/proposals/`: the ADR draft, the full text of every affected `cdad/context/` file, and an executable script:
+
+```bash
+bash cdad/proposals/apply-ADR-NNN-<slug>.sh
+```
+
+Review the proposal, the ADR, and the script, then run that one command yourself from the project root. The script lets you `view` the ADR text and the exact diff against current context, applies every affected file together only once you say `yes`, and is never executed by the agent — see [Human Promotion Boundary](#human-promotion-boundary).
 
 **`cdad/proposals/` is the only directory under `cdad/` that an agent may write to as part of the governed change workflow.**
 
 Routine implementation work does not need to enter this flow. If ordinary implementation repeatedly requires change requests, the constraints may be written too broadly and should be narrowed.
+
+---
+
+## Human Promotion Boundary
+
+Preparing a governed change and promoting it are different acts, and CDAD
+keeps them that way:
+
+```text
+PROPOSAL -> PROMOTION PACKAGE -> HUMAN REVIEW -> EXPLICIT HUMAN EXECUTION -> GOVERNED CHANGE
+```
+
+> **AI may prepare the change. AI may not autonomously promote the change.**
+
+The agent can analyze impact, draft the proposal, draft the ADR, prepare the
+affected `cdad/context/` files, and generate the promotion script. It cannot
+execute that script, edit `cdad/adr/` or `cdad/context/` directly, or treat a
+drafted proposal, ADR, or script as approval — each governed promotion needs
+its own explicit decision from you, and approving one change never carries
+over to the next.
+
+The promotion script is a CDAD artifact in its own right, not a convenience
+wrapper. It lives in `cdad/proposals/`, names the proposal and ADR it belongs
+to in its header, asks for a final confirmation before it writes anything,
+applies every file the change touches in one run, and fails clearly rather
+than leaving the map half-updated. Full rule: `AGENTS.md` → *Human Promotion
+Boundary*.
 
 ---
 
@@ -588,6 +622,8 @@ CDAD is an evolving methodology focused on the governance of context in AI-assis
 > **Context is the Source of Truth.**
 
 Related: [CDAD Framework](https://github.com/mgriott/context-driven-ai-development) — methodology, whitepapers, principles, and governance model.
+
+Community: [CDAD Community (ES)](https://cdad-community.github.io/es/) · [cdad-docs](https://github.com/CDAD-Community/cdad-docs)
 
 ---
 

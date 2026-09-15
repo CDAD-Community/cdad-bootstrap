@@ -76,7 +76,7 @@ edits — see *Backlog governance* in `AGENTS.md`. Precedence: L0 → ADR →
 
 | File | Contains | Loads |
 |---|---|---|
-| `proposals/` | Agent drafts awaiting your review. Delete when resolved | never |
+| `proposals/` | Agent drafts, and approved changes' promotion packages (ADR draft + affected context files + `apply-*.sh`), awaiting your review. Delete when resolved | never |
 
 ## Instructions — how agents behave
 
@@ -102,9 +102,9 @@ because this source repository is the catalog, not an installed project.
 |---|---|
 | `../.claude/skills/cdad-bootstrap/SKILL.md` | first time populating `context/`, pre-freeze, right after cloning the kit |
 | `../.claude/skills/cdad-propose-change/SKILL.md` | processing a change request — architecture, context, conflict, or a development-line (Epic/Story) change |
-| `../.claude/skills/cdad-adr/SKILL.md` | a change was approved and needs recording (architecture/context changes only — a backlog-only change does not get an ADR) |
+| `../.claude/skills/cdad-adr/SKILL.md` | a change was approved and needs recording — drafts the ADR, the affected context files, and the `apply-ADR-NNN-<slug>.sh` promotion script together (architecture/context changes only — a backlog-only change does not get an ADR) |
 | `../.claude/skills/cdad-audit/SKILL.md` | checking whether context still matches the code, or whether `backlog.md` is reconciled with defined Epics/Stories — also the scheduled sweep counterpart to the drift detector below |
-| `../.claude/skills/cdad-drift-response/SKILL.md` | a `CDAD DRIFT SIGNAL` fired, `cdad-audit` found a divergence, or you're asking whether an L3 change contradicts ratified architecture |
+| `../.claude/skills/cdad-drift-response/SKILL.md` | a `CDAD DRIFT SIGNAL` fired, `cdad-audit` found a divergence, or you're asking whether an L3 change contradicts ratified architecture — stages the same promotion-script package as `cdad-adr` |
 
 ## Enforcement — costs zero context
 
@@ -137,13 +137,15 @@ because this source repository is the catalog, not an installed project.
 ## The one flow that matters
 
 ```
-CHANGE-REQUEST.md  ->  proposals/  ->  adr/ + context/stack.md
-   you state intent      agent drafts        you approve and apply
-   always writable       agent writable      blocked for agents
+CHANGE-REQUEST.md  ->  proposals/  ->  your review + `bash apply-*.sh`  ->  adr/ + context/stack.md
+   you state intent      agent drafts        the Human Promotion Boundary       blocked for agents
+   always writable       agent writable      your terminal, your decision
 ```
 
-(All four paths above are relative to `cdad/`.) Everything else in this kit
-exists to make that flow cheap to run and hard to skip.
+(All four paths above are relative to `cdad/`.) The promotion script the
+agent stages in `proposals/` is never run by the agent — see `AGENTS.md` →
+*Human Promotion Boundary*. Everything else in this kit exists to make that
+flow cheap to run and hard to skip.
 
 ---
 
